@@ -1,6 +1,8 @@
-import React from "react";
+import React, {useState} from "react";
 import auth_cart from '../assets/auth_cart.png'
 export default function Auth() {
+    const [isLogin, setIsLogin] = useState(true);
+
     return (
         <div className="flex items-center justify-center h-full">
             <div className="flex min-h-screen bg-[#f7e8e6]">
@@ -24,12 +26,12 @@ export default function Auth() {
                         <h2 className="text-3xl font-bold text-gray-800 text-center">Happy Shopping</h2>
                         <p className="text-lg text-center text-gray-600 mt-2 font-semibold">CREATE NEW ACCOUNT</p>
 
-                        <form className="mt-6">
-                            <input
+                        <div className="mt-6">
+                            {!isLogin && <input
                                 type="text"
                                 placeholder="Full Name"
                                 className="w-full p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 mt-2"
-                            />
+                            />}
                             <input
                                 type="email"
                                 placeholder="Email Address"
@@ -39,20 +41,33 @@ export default function Auth() {
                                 <input
                                     type="password"
                                     placeholder="Password"
-                                    className="w-1/2 p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                                    className={`w-${isLogin? 'full': '1/2'} p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400`}
                                 />
-                                <input
+                                {!isLogin && <input
                                     type="password"
                                     placeholder="Confirm Password"
                                     className="w-1/2 p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
-                                />
+                                />}
                             </div>
                             <button
-                                type="submit"
                                 className="w-full mt-6 bg-white text-pink-500 font-semibold py-3 rounded-3xl shadow-md hover:bg-pink-500 hover:text-white transition"
+                                onClick={() => {setIsLogin(true)}}
                             >
-                                Sign up
+                                {isLogin ? 'Login' : 'Sign up'}
                             </button>
+                            {isLogin && <div className="flex justify-between items-center mt-4">
+                                <div className="flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="keepLoggedIn"
+                                        className="w-4 h-4 mr-2 accent-pink-500 cursor-pointer"
+                                    />
+                                    <label htmlFor="keepLoggedIn" className="text-gray-600 text-sm font-bold">Keep me
+                                        logged in</label>
+                                </div>
+                                <a href="#" className="text-pink-500 text-sm hover:underline font-bold">Forgot
+                                    Password</a>
+                            </div>}
                             <div className="flex items-center justify-center my-4">
                                 <span className="border-b w-1/4"></span>
                                 <span className="mx-2 text-gray-500 text-sm">Or</span>
@@ -60,10 +75,11 @@ export default function Auth() {
                             </div>
                             <button
                                 className="w-full bg-pink-500 text-white font-semibold py-3 rounded-3xl shadow-md hover:bg-pink-600 transition"
+                                onClick={() => {setIsLogin(false)}}
                             >
-                                Login
+                                {isLogin ? 'Sign up' : 'Login'}
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
