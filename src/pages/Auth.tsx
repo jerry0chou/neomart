@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import auth_cart from '../assets/auth_cart.png'
+
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);
 
@@ -10,7 +11,7 @@ export default function Auth() {
                 <div className="hidden md:flex items-center justify-center w-1/2 bg-white">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-gray-800 flex items-center w-3/4 mx-auto gap-2">
-                            <span className="text-brown-700">🛒 NEOMART</span>
+                            <span className="text-gray-800">🛒 NEOMART</span>
                         </h1>
                         <img
                             src={auth_cart}
@@ -24,7 +25,9 @@ export default function Auth() {
                 <div className="w-full md:w-1/2 flex items-center justify-center p-6">
                     <div className="bg-[#f7e8e6] rounded-lg p-10 w-full max-w-md shadow-lg">
                         <h2 className="text-3xl font-bold text-gray-800 text-center">Happy Shopping</h2>
-                        <p className="text-lg text-center text-gray-600 mt-2 font-semibold">CREATE NEW ACCOUNT</p>
+                        <p className="text-lg text-center text-gray-600 mt-2 font-semibold">
+                            {isLogin ? "LOGIN TO YOUR ACCOUNT" : "CREATE NEW ACCOUNT"}
+                        </p>
 
                         <div className="mt-6">
                             {!isLogin && <input
@@ -37,47 +40,77 @@ export default function Auth() {
                                 placeholder="Email Address"
                                 className="w-full p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 mt-4"
                             />
-                            <div className="flex gap-2 mt-4">
+                            {isLogin ? (
                                 <input
                                     type="password"
                                     placeholder="Password"
-                                    className={`w-${isLogin? 'full': '1/2'} p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400`}
+                                    className="w-full p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 mt-4"
                                 />
-                                {!isLogin && <input
-                                    type="password"
-                                    placeholder="Confirm Password"
-                                    className="w-1/2 p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
-                                />}
-                            </div>
+                            ) : (
+                                <div className="flex gap-2 mt-4">
+                                    <input
+                                        type="password"
+                                        placeholder="Password"
+                                        className="w-1/2 p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="Confirm Password"
+                                        className="w-1/2 p-3 rounded-3xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Primary Button */}
                             <button
-                                className="w-full mt-6 bg-white text-pink-500 font-semibold py-3 rounded-3xl shadow-md hover:bg-pink-500 hover:text-white transition"
-                                onClick={() => {setIsLogin(true)}}
+                                type="submit"
+                                className={`w-full mt-6 font-semibold py-3 rounded-3xl shadow-md transition duration-300
+                                ${isLogin ? 'bg-white text-pink-500' : 'bg-pink-500 text-white'}`}
+                                style={isLogin ? {
+                                    background: 'linear-gradient(to right, white 3px, white calc(100% - 3px))',
+                                    boxShadow: '0 0 0 3px white, 0 1px 2px rgba(0, 0, 0, 0.05)'
+                                } : {}}
                             >
                                 {isLogin ? 'Login' : 'Sign up'}
                             </button>
-                            {isLogin && <div className="flex justify-between items-center mt-4">
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id="keepLoggedIn"
-                                        className="w-4 h-4 mr-2 accent-pink-500 cursor-pointer"
-                                    />
-                                    <label htmlFor="keepLoggedIn" className="text-gray-600 text-sm font-bold">Keep me
-                                        logged in</label>
+
+                            {/* Keep me logged in & Forgot Password (only for login) */}
+                            {isLogin && (
+                                <div className="flex justify-between items-center mt-4">
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="keepLoggedIn"
+                                            className="w-5 h-5 mr-2 accent-pink-500 cursor-pointer rounded-md"
+                                        />
+                                        <label htmlFor="keepLoggedIn" className="text-gray-600 text-sm font-bold">
+                                            Keep me logged in
+                                        </label>
+                                    </div>
+                                    <a href="#" className="text-pink-500 text-sm hover:underline font-bold">
+                                        Forgot Password
+                                    </a>
                                 </div>
-                                <a href="#" className="text-pink-500 text-sm hover:underline font-bold">Forgot
-                                    Password</a>
-                            </div>}
+                            )}
+
+                            {/* Divider */}
                             <div className="flex items-center justify-center my-4">
                                 <span className="border-b w-1/4"></span>
                                 <span className="mx-2 text-gray-500 text-sm">Or</span>
                                 <span className="border-b w-1/4"></span>
                             </div>
+
+                            {/* Secondary Button */}
                             <button
-                                className="w-full bg-pink-500 text-white font-semibold py-3 rounded-3xl shadow-md hover:bg-pink-600 transition"
-                                onClick={() => {setIsLogin(false)}}
+                                className={`w-full font-semibold py-3 rounded-3xl shadow-md transition duration-300 
+                                ${!isLogin ? 'bg-white text-pink-500' : 'bg-pink-500 text-white'}`}
+                                style={!isLogin ? {
+                                    background: 'linear-gradient(to right, white 3px, white calc(100% - 3px))',
+                                    boxShadow: '0 0 0 3px white, 0 1px 2px rgba(0, 0, 0, 0.05)'
+                                } : {}}
+                                onClick={() => setIsLogin(!isLogin)}
                             >
-                                {isLogin ? 'Sign up' : 'Login'}
+                                {!isLogin ? 'Login' : 'Sign up'}
                             </button>
                         </div>
                     </div>
