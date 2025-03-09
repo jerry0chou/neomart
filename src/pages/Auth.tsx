@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import auth_cart from '../assets/auth_cart.png'
-
+import { ShoppingCartOutlined } from '@ant-design/icons';
 export default function Auth() {
     const [isLogin, setIsLogin] = useState(true);
 
@@ -11,7 +11,7 @@ export default function Auth() {
                 <div className="hidden md:flex items-center justify-center w-1/2 bg-white">
                     <div className="text-center">
                         <h1 className="text-4xl font-bold text-gray-800 flex items-center w-3/4 mx-auto gap-2">
-                            <span className="text-gray-800">🛒 NEOMART</span>
+                            <span className="text-gray-800"><ShoppingCartOutlined /> NEOMART</span>
                         </h1>
                         <img
                             src={auth_cart}

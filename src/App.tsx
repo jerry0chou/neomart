@@ -1,10 +1,10 @@
-import Auth from "./pages/Auth.tsx";
+import NeoRouter from "./router";
 
 function App() {
 
   return (
-      <div className="w-full h-[100vh]">
-          <Auth/>
+      <div>
+          <NeoRouter/>
       </div>
   )
 }
