@@ -14,7 +14,7 @@ const NeoMartPage = () => {
 
             <div className="flex flex-1">
                 {/* Sidebar */}
-                <aside className="w-64 bg-pink-100 p-4">
+                <aside className="w-44 bg-pink-100 p-4">
                     <Category/>
                     <div className="mb-6 bg-gradient-to-br from-pink-200 to-pink-100 rounded-lg p-4">
                         <div className="text-center font-bold mb-2">LOYALTY</div>

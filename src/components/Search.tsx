@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Search() {
     return (
-        <div className="w-full max-w-3xl relative">
+        <div className="w-full max-w-xl relative">
             <input
                 type="text"
                 placeholder="Search"
