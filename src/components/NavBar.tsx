@@ -12,10 +12,10 @@ export default function Navbar() {
                 </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 mr-2">
                 <div className="flex items-center">
                     <Avatar style={{ backgroundColor: '#f6edf9', color: '#fe16c7', fontSize: '20px' }} size="large">P</Avatar>
-                    <span className="ml-3">Hello, Prakruti</span>
+                    <span className="ml-3">Hello, Jerry</span>
                     <SettingOutlined className="ml-2 text-2xl"/>
                 </div>
                 <BellOutlined className="text-2xl"/>

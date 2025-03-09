@@ -50,14 +50,16 @@ const NeoMartPage = () => {
                         </div>
                     </div>
 
-                    {/* Products Section */}
-                    <ProductList />
+                    <div className="flex flex-row gap-4">
+                        {/* Products Section */}
+                        <ProductList />
+                        <div className="flex flex-col">
+                            <GroupBuying/>
+                            <ShoppingCredits/>
+                        </div>
 
-                    {/* Group Buying Section */}
-                    <GroupBuying/>
+                    </div>
 
-                    {/* Shopping Credits */}
-                    <ShoppingCredits/>
                 </main>
             </div>
         </div>
