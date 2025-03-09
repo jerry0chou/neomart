@@ -6,7 +6,7 @@ export default function Search() {
             <input
                 type="text"
                 placeholder="Search"
-                className="w-full py-2 px-4 rounded-full bg-pink-500 text-white placeholder-white"
+                className="w-full py-2 px-4 rounded-full bg-pink-500 text-white placeholder-gray-200"
             />
         </div>
     )
