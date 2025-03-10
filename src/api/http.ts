@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const baseURL = 'http://127.0.0.1:4523/m1/5633338-5313100-default'
-const baseURL = 'http://127.0.0.1:8000'
+const baseURL = 'https://ecommerceapi-production-48c7.up.railway.app/api/auth'
 
 
 const api = axios.create({
@@ -13,16 +13,17 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        if (config.url === '/api/auth/login') {
+        console.log(config, config.url);
+        if (config.url === '/api/auth/') {
             return config;
         }
-        const token = localStorage.getItem('token'); // 从本地存储中获取 token
-        if (!token) {
-            window.location.href = '/login';
-            return Promise.reject(new Error('Token is missing, redirecting to login.'));
-        }
-
-        config.headers.Authorization = `Bearer ${token}`;
+        // const token = localStorage.getItem('token'); // 从本地存储中获取 token
+        // if (!token) {
+        //     window.location.href = '/login';
+        //     return Promise.reject(new Error('Token is missing, redirecting to login.'));
+        // }
+        //
+        // config.headers.Authorization = `Bearer ${token}`;
         return config;
     },
     (error) => Promise.reject(error)
