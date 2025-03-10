@@ -1,13 +1,21 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { ShoppingCartOutlined} from "@ant-design/icons";
 import ProductList from "../components/ProductList.tsx";
 import GroupBuying from "../components/GroupBuying.tsx";
 import ShoppingCredits from "../components/ShoppingCredits.tsx";
 import Search from "../components/Search.tsx";
 import Category from "../components/Category.tsx";
+import {useNavigate} from "react-router-dom";
 
 const NeoMartPage = () => {
-
+    const navigate = useNavigate()
+    useEffect(() => {
+        const email = localStorage.getItem('email') || '';
+        const access_token = localStorage.getItem('access_token') || '';
+        if(!email || !access_token){
+            navigate('/auth');
+        }
+    }, []);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
