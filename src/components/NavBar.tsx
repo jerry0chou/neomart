@@ -1,8 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {ShoppingCartOutlined, SettingOutlined, BellOutlined} from '@ant-design/icons';
 import {Avatar} from "antd";
 
 export default function Navbar() {
+    const [email, setEmail] = useState('');
+    useEffect(() => {
+        const mail = localStorage.getItem('email');
+        setEmail(mail || '');
+    }, [])
     return (
         <header className="bg-white p-3 flex items-center justify-between border-b">
             <div className="flex items-center">
@@ -15,7 +20,7 @@ export default function Navbar() {
             <div className="flex items-center space-x-4 mr-2">
                 <div className="flex items-center">
                     <Avatar style={{ backgroundColor: '#f6edf9', color: '#fe16c7', fontSize: '18px' }} size="large">J</Avatar>
-                    <span className="ml-3">Hello, Jerry</span>
+                    <span className="ml-3">Hello, {email}</span>
                     <SettingOutlined className="ml-2 text-xl"/>
                 </div>
                 <BellOutlined className="text-xl"/>

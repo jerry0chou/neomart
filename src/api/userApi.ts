@@ -1,7 +1,16 @@
 import api from "./http.ts";
 import {AxiosError} from "axios";
 
-export async function register(username: string, email: string, password: string): Promise<{status: 'success'| 'error', message: string}>{
+export interface BaseResponse {
+    status: 'success'| 'error';
+    message: string;
+}
+
+export interface TokenResponse extends BaseResponse {
+    access_token?: string
+}
+
+export async function register(username: string, email: string, password: string): Promise<BaseResponse>{
     try {
         const response = await api.post<{message?: string}>('/register', {username, email, password, confirm_password: password });
         console.log('register res',response);
@@ -16,17 +25,22 @@ export async function register(username: string, email: string, password: string
     }
 }
 
-// export async function login(email: string, password: string): Promise<boolean>{
-//     try {
-//         const response = await api.post<UserRegister>('/login', { email, password });
-//         console.log('login res',response);
-//         const { access_token, user_id } = response.data;
-//         localStorage.setItem('token', access_token);
-//         localStorage.setItem('user_id', user_id);
-//         return true;
-//     } catch (error) {
-//         console.error('Login error:', error);
-//         return false
-//     }
-// }
+export async function login(email: string, password: string): Promise<TokenResponse>{
+    try {
+        const response = await api.post<{ access_token: string}>('/login', { email, password });
+        console.log('login res',response);
+        const { access_token } = response.data;
+        if(access_token){
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('email', email);
+            return {status: 'success', message: '', access_token}
+        }
+        else return {status: 'error', message: 'access_token is none', access_token: ''};
+    } catch (error) {
+        console.error('Login error:', error);
+        const err = (error as AxiosError<{error?: string}>).response?.data?.error;
+        if (err) return  { status: 'error', message: err || 'An error occurred', access_token: ''};
+        return {status: 'error', message: 'login error', access_token: ''};
+    }
+}
 

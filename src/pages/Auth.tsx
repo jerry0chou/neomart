@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import auth_cart from '../assets/auth_cart.png'
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import {message} from "antd";
-import {register} from "../api/userApi.ts";
+import {login, register} from "../api/userApi.ts";
 import {useNavigate} from "react-router-dom";
 function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -61,6 +61,16 @@ export default function Auth() {
                     }else
                         messageApi.error(result.message)
                 });
+            }
+        }else{
+            if(checkEmail() && checkPassword()){
+                login(email, password).then((result) => {
+                    if(result.status == 'success') {
+                        messageApi.success(result.message)
+                        navigate('/')
+                    }else
+                        messageApi.error(result.message)
+                })
             }
         }
     }

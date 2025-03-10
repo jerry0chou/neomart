@@ -13,17 +13,17 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        console.log(config, config.url);
-        if (config.url === '/api/auth/') {
+        console.log('config',config,'config.url', config.url);
+        if (config.url === '/login') {
             return config;
         }
-        // const token = localStorage.getItem('token'); // 从本地存储中获取 token
-        // if (!token) {
-        //     window.location.href = '/login';
-        //     return Promise.reject(new Error('Token is missing, redirecting to login.'));
-        // }
-        //
-        // config.headers.Authorization = `Bearer ${token}`;
+        const token = localStorage.getItem('access_token'); // 从本地存储中获取 token
+        if (!token) {
+            window.location.href = '/login';
+            return Promise.reject(new Error('Token is missing, redirecting to login.'));
+        }
+
+        config.headers.Authorization = `Bearer ${token}`;
         return config;
     },
     (error) => Promise.reject(error)
@@ -32,11 +32,11 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
     (response) => {
-        const { code, data, msg } = response.data;
-        if (code !== 0) {
-            return Promise.reject(new Error(msg || 'Error'));
-        }
-        return response.data; // 返回解析后的 data 部分
+        // const { code, data, msg } = response.data;
+        // if (code !== 0) {
+        //     return Promise.reject(new Error(msg || 'Error'));
+        // }
+        return response; // 返回解析后的 data 部分
     },
     (error) => {
 
