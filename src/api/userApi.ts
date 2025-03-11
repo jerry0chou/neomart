@@ -25,9 +25,9 @@ export async function register(username: string, email: string, password: string
     }
 }
 
-export async function login(email: string, password: string): Promise<TokenResponse>{
+export async function login(email: string, password: string, remember: boolean): Promise<TokenResponse>{
     try {
-        const response = await api.post<{ access_token: string}>('/login', { email, password });
+        const response = await api.post<{ access_token: string}>('/login', { email, password, remember });
         console.log('login res',response);
         const { access_token } = response.data;
         if(access_token){

@@ -19,6 +19,7 @@ export default function Auth() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isChecked, setIsChecked] = useState(false);
 
     const checkFullname = (): boolean=>{
         if(fullname.length <  3){
@@ -64,7 +65,7 @@ export default function Auth() {
             }
         }else{
             if(checkEmail() && checkPassword()){
-                login(email, password).then((result) => {
+                login(email, password, isChecked).then((result) => {
                     if(result.status == 'success') {
                         messageApi.success(result.message)
                         navigate('/')
@@ -158,6 +159,7 @@ export default function Auth() {
                                             type="checkbox"
                                             id="keepLoggedIn"
                                             className="w-5 h-5 mr-2 accent-pink-500 cursor-pointer rounded-md"
+                                            onChange={(e) => setIsChecked(e.target.checked)}
                                         />
                                         <label htmlFor="keepLoggedIn" className="text-gray-600 text-sm font-bold">
                                             Keep me logged in
