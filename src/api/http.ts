@@ -14,12 +14,13 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         console.log('config',config,'config.url', config.url);
-        if (config.url === '/login') {
+        console.log('access_token',localStorage.getItem('access_token'));
+        if (config.url === '/login' || config.url === '/register') {
             return config;
         }
         const token = localStorage.getItem('access_token'); // 从本地存储中获取 token
         if (!token) {
-            window.location.href = '/login';
+            window.location.href = '/auth';
             return Promise.reject(new Error('Token is missing, redirecting to login.'));
         }
 

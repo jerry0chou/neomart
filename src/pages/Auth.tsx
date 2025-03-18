@@ -54,6 +54,7 @@ export default function Auth() {
     const onClick = ()=>{
         console.log("clicked", isLogin ? 'Login' : 'Sign up');
         if(!isLogin){
+            console.log('sign up')
             if(checkFullname() && checkEmail() && checkPassword() && checkConfirmPassword()){
                 register(fullname, email, password).then((result) => {
                     if(result.status == 'success') {
