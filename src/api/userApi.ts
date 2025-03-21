@@ -12,7 +12,7 @@ export interface TokenResponse extends BaseResponse {
 
 export async function register(username: string, email: string, password: string): Promise<BaseResponse>{
     try {
-        const response = await api.post<{message?: string}>('/register', {username, email, password, confirm_password: password });
+        const response = await api.post<{message?: string}>('/api/auth/register', {username, email, password, confirm_password: password });
         console.log('register res',response);
         const { message } = response.data;
         if(message) return {status: 'success',message}
@@ -27,7 +27,7 @@ export async function register(username: string, email: string, password: string
 
 export async function login(email: string, password: string, remember: boolean): Promise<TokenResponse>{
     try {
-        const response = await api.post<{ access_token: string}>('/login', { email, password, remember });
+        const response = await api.post<{ access_token: string}>('/api/auth/login', { email, password, remember });
         console.log('login res',response);
         const { access_token } = response.data;
         if(access_token){

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const baseURL = 'http://127.0.0.1:4523/m1/5633338-5313100-default'
-const baseURL = 'https://ecommerceapi-production-48c7.up.railway.app/api/auth'
+const baseURL = 'https://ecommerceapi-production-48c7.up.railway.app'
 
 
 const api = axios.create({
@@ -15,7 +15,7 @@ api.interceptors.request.use(
     (config) => {
         console.log('config',config,'config.url', config.url);
         console.log('access_token',localStorage.getItem('access_token'));
-        if (config.url === '/login' || config.url === '/register') {
+        if (config.url === '/api/auth/login' || config.url === '/api/auth/register') {
             return config;
         }
         const token = localStorage.getItem('access_token'); // 从本地存储中获取 token
