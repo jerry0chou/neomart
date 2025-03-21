@@ -43,7 +43,7 @@ export default function Navbar() {
     return (
         <header className="bg-white p-3 flex items-center justify-between border-b">
             <div className="flex items-center">
-                <div className="text-xl font-bold text-stone-800">
+                <div className="text-xl font-bold text-stone-800" onClick={()=>navigate('/')}>
                     <ShoppingCartOutlined />
                     <span className="ml-1">NEOMART</span>
                 </div>

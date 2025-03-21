@@ -6,6 +6,8 @@ import ShoppingCredits from "../components/ShoppingCredits.tsx";
 import Search from "../components/Search.tsx";
 import Category from "../components/Category.tsx";
 import {useNavigate} from "react-router-dom";
+import {getHomeList} from "../api/homeApi.ts";
+import Cart from "./Cart.tsx";
 
 const NeoMartPage = () => {
     const navigate = useNavigate()
@@ -15,6 +17,7 @@ const NeoMartPage = () => {
         if(!email || !access_token){
             navigate('/auth');
         }
+        getHomeList()
     }, []);
 
     return (
@@ -52,9 +55,9 @@ const NeoMartPage = () => {
                     {/* Search Bar */}
                     <div className="flex justify-center items-center mb-6">
                         <Search/>
-                        <div className="ml-4 relative">
+                        <div className="ml-4 relative" onClick={()=> navigate('cart')}>
                             <ShoppingCartOutlined className="text-4xl"/>
-                            <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                            {/*<span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>*/}
                         </div>
                     </div>
 
