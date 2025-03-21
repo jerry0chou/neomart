@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {ShoppingCartOutlined, SettingOutlined, BellOutlined, UserOutlined, LogoutOutlined} from '@ant-design/icons';
-import {Avatar, Dropdown} from "antd";
+import {Avatar, Dropdown, MenuProps} from "antd";
 import {useNavigate} from "react-router-dom";
 
 export default function Navbar() {
     const navigate = useNavigate()
     // Define the items for the dropdown menu
-    const items = [
+    const items: MenuProps['items']  = [
         {
             key: '1',
             label: 'Profile',
