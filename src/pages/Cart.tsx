@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, Trash2, ArrowRight } from 'lucide-react';
 import {useNavigate} from "react-router-dom";
+
+import clothing from "../assets/clothing.png";
+import shirt from "../assets/shirt.png";
+import jeans from "../assets/jeans.png";
+
 const Cart = () => {
     // 初始商品数据
     const [items, setItems] = useState([
         {
             id: 1,
-            name: "Italy Pizza",
-            description: "Extra cheese and toping",
-            price: 681,
+            name: "upper clothing",
+            description: "slim and soft",
+            price: 59,
             quantity: 1,
-            image: "/api/placeholder/150/150"
+            image: clothing
         },
         {
             id: 2,
-            name: "Combo Plate",
-            description: "Extra cheese and toping",
-            price: 681,
+            name: "Shirt",
+            description: "Extra Large",
+            price: 53,
             quantity: 1,
-            image: "/api/placeholder/150/150"
+            image: shirt
         },
         {
             id: 3,
-            name: "Spanish Rice",
-            description: "Extra garlic",
-            price: 681,
+            name: "Jeans",
+            description: "Blue",
+            price: 79,
             quantity: 1,
-            image: "/api/placeholder/150/150"
+            image: jeans
         }
     ]);
 
@@ -147,21 +152,7 @@ const Cart = () => {
                                 </svg>
                             </div>
                             <div className="w-16 h-12 bg-white bg-opacity-20 rounded-md flex items-center justify-center p-2">
-                                <svg viewBox="0 0 38 24" width="100%" height="100%">
-                                    <path fill="#1A1876" d="M35,2.4 C35,1.1 33.9,0 32.6,0 L5.4,0 C4.1,0 3,1.1 3,2.4 L3,21.6 C3,22.9 4.1,24 5.4,24 L32.6,24 C33.9,24 35,22.9 35,21.6 L35,2.4 Z" />
-                                    <path fill="#6C69B9" d="M14.5,7 C14.4,8.3 13.5,9.3 12.2,9.3 C10.9,9.3 10,8.3 10.1,7 C10.2,5.7 11.1,4.7 12.4,4.7 C13.7,4.7 14.6,5.7 14.5,7 Z M11.8,10.8 L14.2,10.8 L14.2,19.3 L11.8,19.3 L11.8,10.8 Z M18.2,10.8 L20.6,10.8 L20.6,12 C21.1,11.2 22.1,10.6 23.2,10.6 C25.4,10.6 27,12.2 27,14.7 C27,17.2 25.4,18.8 23.2,18.8 C22.1,18.8 21.1,18.2 20.6,17.4 L20.6,19.3 L18.2,19.3 L18.2,10.8 Z M22.5,12.7 C21.3,12.7 20.5,13.5 20.5,14.7 C20.5,15.9 21.3,16.7 22.5,16.7 C23.7,16.7 24.5,15.9 24.5,14.7 C24.5,13.5 23.7,12.7 22.5,12.7 Z" />
-                                </svg>
-                            </div>
-                            <div className="w-16 h-12 bg-white bg-opacity-20 rounded-md flex items-center justify-center p-2">
-                                <svg viewBox="0 0 38 24" width="100%" height="100%">
-                                    <rect x="0.5" y="0.5" width="37" height="23" fill="#016FD0" />
-                                    <path fill="#FFFFFF" d="M19,15.7 L17.1,8.3 L14.5,8.3 L14.5,8.3 L14.5,8.3 L14.5,8.3 L14.5,8.3 L13.7,13.3 C13.7,13.6 13.4,13.9 13.1,13.9 L10.5,13.9 L10.4,14.3 L13.7,14.3 C14.1,14.3 14.4,14 14.5,13.6 L15.1,10 L15.1,10 L16.4,15.7 L19,15.7 Z" />
-                                    <path fill="#FFFFFF" d="M27.2,11.9 L28.2,9.1 L28.9,11.9 L27.2,11.9 Z M30.8,15.7 L29.8,12.5 L31.7,12.5 L31.7,11.3 L29.5,11.3 L29,9.9 L28.9,9.9 L29.5,11.3 L27.1,11.3 L27.1,12.5 L29.1,12.5 L28.3,15.7 L30.8,15.7 Z" />
-                                    <path fill="#FFFFFF" d="M25.6,13.3 C25.6,13 25.8,12.7 26.1,12.7 C26.4,12.7 26.6,12.4 26.6,12.1 L26.6,8.3 L24.6,8.3 L24.6,8.3 L24.6,8.3 L24.6,8.3 L24.6,8.3 L24.6,8.3 L23.8,13.3 C23.8,13.6 23.5,13.9 23.2,13.9 L20.9,13.9 L20.8,14.3 L24,14.3 C24.4,14.3 24.7,14 24.8,13.6 L25.6,8.7 L26.6,8.7 L26.6,11.9 C26.6,12.5 26.1,13 25.5,13 C25.2,13 24.9,13.1 24.8,13.3 L25.6,13.3 Z" />
-                                </svg>
-                            </div>
-                            <div className="w-16 h-12 bg-white bg-opacity-20 rounded-md flex items-center justify-center">
-                                <span className="text-sm">See all</span>
+                               <div className="text-black">Visa</div>
                             </div>
                         </div>
                     </div>
