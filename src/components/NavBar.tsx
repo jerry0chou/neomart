@@ -1,8 +1,40 @@
 import React, {useEffect, useState} from 'react';
-import {ShoppingCartOutlined, SettingOutlined, BellOutlined} from '@ant-design/icons';
-import {Avatar} from "antd";
+import {ShoppingCartOutlined, SettingOutlined, BellOutlined, UserOutlined, LogoutOutlined} from '@ant-design/icons';
+import {Avatar, Dropdown} from "antd";
+import {useNavigate} from "react-router-dom";
 
 export default function Navbar() {
+    const navigate = useNavigate()
+    // Define the items for the dropdown menu
+    const items = [
+        {
+            key: '1',
+            label: 'Profile',
+            icon: <UserOutlined />,
+            onClick: () => console.log('Profile clicked')
+        },
+        {
+            key: '2',
+            label: 'Settings',
+            icon: <SettingOutlined />,
+            onClick: () => console.log('Settings clicked')
+        },
+        {
+            type: 'divider'
+        },
+        {
+            key: '3',
+            label: 'Logout',
+            icon: <LogoutOutlined />,
+            onClick: () => {
+                localStorage.removeItem('email');
+                localStorage.removeItem('access_token');
+                navigate('/auth')
+                // Add any logout logic here
+                console.log('Logout clicked');
+            }
+        }
+    ];
     const [email, setEmail] = useState('');
     useEffect(() => {
         const mail = localStorage.getItem('email');
@@ -21,7 +53,9 @@ export default function Navbar() {
                 <div className="flex items-center">
                     <Avatar style={{ backgroundColor: '#f6edf9', color: '#fe16c7', fontSize: '18px' }} size="large">J</Avatar>
                     <span className="ml-3">Hello, {email}</span>
-                    <SettingOutlined className="ml-2 text-xl"/>
+                    <Dropdown menu={{ items }} placement="bottomRight" trigger={['click']}>
+                        <SettingOutlined className="ml-2 text-xl cursor-pointer"/>
+                    </Dropdown>
                 </div>
                 <BellOutlined className="text-xl"/>
                 {/*<div className="flex items-center">*/}
