@@ -1,62 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, Trash2, ArrowRight } from 'lucide-react';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { removeFromCart, updateQuantity } from '../store/cartSlice';
 
 import clothing from "../assets/clothing.png";
 import shirt from "../assets/shirt.png";
 import jeans from "../assets/jeans.png";
 
 const Cart = () => {
-    // 初始商品数据
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            name: "upper clothing",
-            description: "slim and soft",
-            price: 59,
-            quantity: 1,
-            image: clothing
-        },
-        {
-            id: 2,
-            name: "Shirt",
-            description: "Extra Large",
-            price: 53,
-            quantity: 1,
-            image: shirt
-        },
-        {
-            id: 3,
-            name: "Jeans",
-            description: "Blue",
-            price: 79,
-            quantity: 1,
-            image: jeans
-        }
-    ]);
-
-    // 增加商品数量
-    const increaseQuantity = (id: number) => {
-        setItems(items.map(item =>
-            item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        ));
-    };
-
-    // 减少商品数量
-    const decreaseQuantity = (id: number) => {
-        setItems(items.map(item =>
-            item.id === id && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
-        ));
-    };
-
-    // 移除商品
-    const removeItem = (id: number) => {
-        setItems(items.filter(item => item.id !== id));
-    };
+    const dispatch = useAppDispatch();
+    const items = useAppSelector(state => state.cart.items);
+    const navigate = useNavigate();
 
     // 计算小计
     const calculateSubtotal = () => {
-        return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return items.reduce((total, item) => {
+            const price = parseFloat(item.price.replace('$', ''));
+            return total + (price * item.quantity);
+        }, 0);
     };
 
     // 运费
@@ -66,13 +28,13 @@ const Cart = () => {
     const calculateTotal = () => {
         return calculateSubtotal() + shipping;
     };
-    const navigate = useNavigate();
+
     return (
         <div className="flex flex-col md:flex-row max-w-6xl mx-auto bg-gray-50">
             {/* 左侧购物车 */}
             <div className="w-full md:w-1/2 p-6">
                 <div className="flex items-center mb-6">
-                    <ArrowLeft className="mr-2 text-gray-700" onClick={()=> navigate(-1)}/>
+                    <ArrowLeft className="mr-2 text-gray-700" onClick={() => navigate(-1)} />
                     <span className="text-xl font-semibold text-gray-700">Shopping Continue</span>
                 </div>
 
@@ -90,19 +52,19 @@ const Cart = () => {
                                 />
                                 <div className="ml-4 flex-1">
                                     <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                                    <p className="text-gray-600 text-sm">{item.description}</p>
+                                    <p className="text-gray-600 text-sm">{item.tag}</p>
                                 </div>
                                 <div className="flex items-center mx-4">
                                     <div className="flex flex-col items-center">
                                         <button
-                                            onClick={() => increaseQuantity(item.id)}
+                                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}
                                             className="text-gray-500 hover:text-pink-500"
                                         >
                                             <ChevronUp size={20} />
                                         </button>
                                         <span className="mx-2 text-lg font-medium">{item.quantity}</span>
                                         <button
-                                            onClick={() => decreaseQuantity(item.id)}
+                                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))}
                                             className="text-gray-500 hover:text-pink-500"
                                         >
                                             <ChevronDown size={20} />
@@ -110,10 +72,10 @@ const Cart = () => {
                                     </div>
                                 </div>
                                 <div className="text-lg font-semibold text-gray-800 mr-4">
-                                    ${item.price}
+                                    {item.price}
                                 </div>
                                 <button
-                                    onClick={() => removeItem(item.id)}
+                                    onClick={() => dispatch(removeFromCart(item.id))}
                                     className="text-gray-400 hover:text-pink-500"
                                 >
                                     <Trash2 size={20} />
@@ -205,7 +167,7 @@ const Cart = () => {
                     <div className="space-y-2 mb-8">
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span className="font-semibold">${calculateSubtotal().toLocaleString()}</span>
+                            <span className="font-semibold">${calculateSubtotal().toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Shipping</span>
@@ -213,12 +175,12 @@ const Cart = () => {
                         </div>
                         <div className="flex justify-between">
                             <span>Total (Tax incl.)</span>
-                            <span className="font-semibold">${calculateTotal().toLocaleString()}</span>
+                            <span className="font-semibold">${calculateTotal().toFixed(2)}</span>
                         </div>
                     </div>
 
                     <button className="w-full bg-pink-400 hover:bg-pink-300 text-white rounded-md py-4 flex justify-between items-center px-6">
-                        <span className="text-xl font-bold">${calculateTotal().toLocaleString()}</span>
+                        <span className="text-xl font-bold">${calculateTotal().toFixed(2)}</span>
                         <div className="flex items-center">
                             <span className="mr-2 text-lg">Checkout</span>
                             <ArrowRight size={20} />
