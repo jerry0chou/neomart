@@ -1,13 +1,17 @@
 import React from "react";
+import { SearchOutlined } from "@ant-design/icons";
 
 export default function Search() {
     return (
         <div className="w-full max-w-xl relative">
-            <input
-                type="text"
-                placeholder="Search"
-                className="w-full py-2 px-4 rounded-full bg-pink-500 text-white placeholder-gray-200"
-            />
+            <div className="relative">
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="w-full py-3 pl-12 pr-4 rounded-full bg-white border border-pink-200 focus:border-pink-400 focus:ring-2 focus:ring-pink-200 focus:outline-none transition-all text-gray-700 placeholder-gray-400"
+                />
+                <SearchOutlined className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400 text-lg" />
+            </div>
         </div>
     )
 }

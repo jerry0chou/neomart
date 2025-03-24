@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.category-collapse .ant-collapse-header {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.category-collapse .ant-collapse-content-box {
+    padding: 8px 0 !important;
+}
+
+.category-collapse .ant-collapse-expand-icon {
+    color: #666 !important;
+}
+
+.category-collapse .ant-collapse-item {
+    border-bottom: none !important;
+}
+
+.category-collapse .ant-collapse-content {
+    background: transparent !important;
+}

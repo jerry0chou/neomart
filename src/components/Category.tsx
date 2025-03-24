@@ -1,41 +1,57 @@
 import React, {useState} from "react";
 import {DownOutlined} from "@ant-design/icons";
+import { Collapse } from 'antd';
+import type { CollapseProps } from 'antd';
 
 export default function Category(){
-    const [categoryOpen, setCategoryOpen] = useState(false);
-
     const categories = [
-        'Electronics',
-        'Wrlit font',
-        'Estorl',
-        'Fashion',
-        'Fashion',
-        'Home & Kitchen',
-        'Beauty',
-        'Beauty & Health'
+        { name: 'Electronics', count: 128 },
+        { name: 'Fashion', count: 256 },
+        { name: 'Home & Kitchen', count: 189 },
+        { name: 'Beauty & Health', count: 145 },
+        { name: 'Sports & Outdoors', count: 92 },
+        { name: 'Books', count: 167 },
+        { name: 'Toys & Games', count: 83 },
+        { name: 'Jewelry', count: 76 }
     ];
-    return (
-        <div className="mb-4">
-            <div
-                className="flex items-center justify-between font-semibold p-1 border-b border-gray-300 cursor-pointer"
-                onClick={() => setCategoryOpen(!categoryOpen)}
-            >
-                <span>Category</span>
-                <DownOutlined className="text-sm"/>
-            </div>
 
-            {categoryOpen && (
-                <ul className="mt-1">
+    const items: CollapseProps['items'] = [
+        {
+            key: '1',
+            label: (
+                <span className="text-base font-medium text-gray-800">
+                    Categories
+                </span>
+            ),
+            children: (
+                <div className="py-1">
                     {categories.map((category, index) => (
-                        <li
+                        <div
                             key={index}
-                            className="p-1 hover:bg-pink-200 border-b border-gray-200 cursor-pointer text-sm"
+                            className="flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group"
                         >
-                            {category}
-                        </li>
+                            <span className="text-gray-700 group-hover:text-pink-600">
+                                {category.name}
+                            </span>
+                            <span className="text-xs text-gray-500 bg-white/60 px-2.5 py-1 rounded-full group-hover:bg-white group-hover:text-pink-600">
+                                {category.count}
+                            </span>
+                        </div>
                     ))}
-                </ul>
-            )}
+                </div>
+            ),
+        }
+    ];
+
+    return (
+        <div className="bg-gradient-to-b from-pink-100/80 to-pink-50/80 rounded-lg">
+            <Collapse
+                defaultActiveKey={['1']}
+                ghost
+                expandIconPosition="end"
+                items={items}
+                className="category-collapse"
+            />
         </div>
-    )
+    );
 }
