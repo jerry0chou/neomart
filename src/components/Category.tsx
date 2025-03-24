@@ -44,7 +44,7 @@ export default function Category(){
     ];
 
     return (
-        <div className="bg-gradient-to-b from-pink-100/80 to-pink-50/80 rounded-lg">
+        <div className="bg-gradient-to-b from-pink-200/100 to-pink-100/100 rounded-lg">
             <Collapse
                 defaultActiveKey={['1']}
                 ghost

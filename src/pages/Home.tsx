@@ -36,10 +36,10 @@ const NeoMartPage = () => {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-gray-100 rounded-xl">
             <div className="flex flex-1">
                 {/* Sidebar */}
-                <aside className="w-44 bg-pink-100 p-4">
+                <aside className="w-44 p-4">
                     <Category/>
                 </aside>
 
