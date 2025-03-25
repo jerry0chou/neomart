@@ -1,19 +1,37 @@
-import React, {useState} from "react";
-import {DownOutlined} from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { DownOutlined } from "@ant-design/icons";
 import { Collapse } from 'antd';
 import type { CollapseProps } from 'antd';
+import { getCategories, Category as CategoryType } from '../api/homeApi';
 
-export default function Category(){
-    const categories = [
-        { name: 'Electronics', count: 128 },
-        { name: 'Fashion', count: 256 },
-        { name: 'Home & Kitchen', count: 189 },
-        { name: 'Beauty & Health', count: 145 },
-        { name: 'Sports & Outdoors', count: 92 },
-        { name: 'Books', count: 167 },
-        { name: 'Toys & Games', count: 83 },
-        { name: 'Jewelry', count: 76 }
-    ];
+interface CategoryProps {
+    onCategorySelect?: (categoryId: string) => void;
+}
+
+export default function Category({ onCategorySelect }: CategoryProps) {
+    const [categories, setCategories] = useState<CategoryType[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            const data = await getCategories();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCategoryClick = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+        onCategorySelect?.(categoryId);
+    };
 
     const items: CollapseProps['items'] = [
         {
@@ -25,16 +43,27 @@ export default function Category(){
             ),
             children: (
                 <div className="py-1">
-                    {categories.map((category, index) => (
+                    <div
+                        key="all"
+                        className={`flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group ${
+                            selectedCategory === 'all' ? 'bg-white/50 text-pink-600' : ''
+                        }`}
+                        onClick={() => handleCategoryClick('all')}
+                    >
+                        <span className={`${selectedCategory === 'all' ? 'text-pink-600' : 'text-gray-700'} group-hover:text-pink-600`}>
+                            All Categories
+                        </span>
+                    </div>
+                    {categories.map((category) => (
                         <div
-                            key={index}
-                            className="flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group"
+                            key={category.id}
+                            className={`flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group ${
+                                selectedCategory === String(category.id) ? 'bg-white/50 text-pink-600' : ''
+                            }`}
+                            onClick={() => handleCategoryClick(String(category.id))}
                         >
-                            <span className="text-gray-700 group-hover:text-pink-600">
+                            <span className={`${selectedCategory === String(category.id) ? 'text-pink-600' : 'text-gray-700'} group-hover:text-pink-600`}>
                                 {category.name}
-                            </span>
-                            <span className="text-xs text-gray-500 bg-white/60 px-2.5 py-1 rounded-full group-hover:bg-white group-hover:text-pink-600">
-                                {category.count}
                             </span>
                         </div>
                     ))}

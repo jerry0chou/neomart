@@ -6,7 +6,7 @@ import ShoppingCredits from "../components/ShoppingCredits.tsx";
 import Search from "../components/Search.tsx";
 import Category from "../components/Category.tsx";
 import {useNavigate} from "react-router-dom";
-import {getHomeList} from "../api/homeApi.ts";
+import {Product} from "../api/homeApi.ts";
 import Cart from "./Cart.tsx";
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { Modal } from 'antd';
@@ -17,6 +17,8 @@ const NeoMartPage = () => {
     const dispatch = useAppDispatch();
     const [isCreditsModalVisible, setIsCreditsModalVisible] = useState(false);
     const [isGroupBuyingModalVisible, setIsGroupBuyingModalVisible] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const cartItems = useAppSelector(state => state.cart.items);
     const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
@@ -32,15 +34,18 @@ const NeoMartPage = () => {
                 email: email
             }));
         }
-        getHomeList()
     }, []);
+
+    const handleCategorySelect = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100 rounded-xl">
             <div className="flex flex-1">
                 {/* Sidebar */}
                 <aside className="w-44 p-4">
-                    <Category/>
+                    <Category onCategorySelect={handleCategorySelect} />
                 </aside>
 
                 {/* Main Content */}
@@ -85,8 +90,8 @@ const NeoMartPage = () => {
                         </div>
                     </div>
 
-                    {/* Products Section */}
-                    <ProductList />
+                    {/* Products List */}
+                    <ProductList selectedCategory={selectedCategory} />
 
                     {/* Modals */}
                     <Modal
@@ -102,11 +107,14 @@ const NeoMartPage = () => {
                     <Modal
                         title="Group Buying"
                         open={isGroupBuyingModalVisible}
-                        onCancel={() => setIsGroupBuyingModalVisible(false)}
+                        onCancel={() => {
+                            setIsGroupBuyingModalVisible(false);
+                            setSelectedProduct(undefined);
+                        }}
                         footer={null}
                         width={600}
                     >
-                        <GroupBuying />
+                        <GroupBuying product={selectedProduct} onClose={() => setIsGroupBuyingModalVisible(false)} />
                     </Modal>
                 </main>
             </div>

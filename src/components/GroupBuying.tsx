@@ -1,99 +1,184 @@
-import React from 'react';
-import { Button, Input, List, Tag } from 'antd';
-import { ShareAltOutlined, UserOutlined } from '@ant-design/icons';
-import styled from '@emotion/styled';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Input, message, Progress, Spin } from 'antd';
+import { ShareAltOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
+import { createGroupBuy, getGroupBuy, joinGroupBuy, applyGroupBuyDiscount } from '../api/groupBuyApi';
+import { Product } from '../api/homeApi';
 
-// 创建自定义按钮组件来覆盖 Ant Design 的默认样式
-const StyledButton = styled(Button)`
-    &.ant-btn-primary {
-        background: linear-gradient(to right, #f43f5e, #fb7185) !important;
-        border: none !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-        transition: all 0.3s ease !important;
+interface GroupBuyingProps {
+    product?: Product;
+    onClose?: () => void;
+}
 
-        &:hover {
-            background: linear-gradient(to right, #e11d48, #f43f5e) !important;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+export default function GroupBuying({ product, onClose }: GroupBuyingProps) {
+    const [loading, setLoading] = useState(false);
+    const [groupBuyLink, setGroupBuyLink] = useState('');
+    const [discountPercentage, setDiscountPercentage] = useState(10);
+    const [minParticipants, setMinParticipants] = useState(5);
+    const [currentParticipants, setCurrentParticipants] = useState(0);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    useEffect(() => {
+        if (groupBuyLink) {
+            const fetchGroupBuyDetails = async () => {
+                try {
+                    const details = await getGroupBuy(groupBuyLink);
+                    setCurrentParticipants(details.current_participants);
+                    setMinParticipants(details.min_participants);
+                    setDiscountPercentage(details.discount_percentage);
+                } catch (error) {
+                    messageApi.error('Failed to fetch group buy details');
+                }
+            };
+
+            const interval = setInterval(fetchGroupBuyDetails, 5000); // Poll every 5 seconds
+            return () => clearInterval(interval);
         }
-    }
-`;
+    }, [groupBuyLink]);
 
-export default function GroupBuying() {
-    // Mock data - replace with actual data from your backend
-    const activeGroups = [
-        { id: 1, name: 'Summer Collection', members: 3, target: 5, discount: '20%' },
-        { id: 2, name: 'Electronics Bundle', members: 2, target: 4, discount: '15%' },
-    ];
+    const handleCreateGroupBuy = async () => {
+        if (!product) {
+            messageApi.error('No product selected');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await createGroupBuy(product.id, discountPercentage, minParticipants);
+            if (response.status === 'success' && response.unique_link) {
+                setGroupBuyLink(response.unique_link);
+                messageApi.success('Group buy created successfully!');
+            } else {
+                messageApi.error(response.message);
+            }
+        } catch (error) {
+            messageApi.error('Failed to create group buy');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleJoinGroupBuy = async () => {
+        if (!groupBuyLink) {
+            messageApi.error('No group buy link provided');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await joinGroupBuy(groupBuyLink);
+            if (response.status === 'success') {
+                messageApi.success('Successfully joined the group buy!');
+                const details = await getGroupBuy(groupBuyLink);
+                setCurrentParticipants(details.current_participants);
+            } else {
+                messageApi.error(response.message);
+            }
+        } catch (error) {
+            messageApi.error('Failed to join group buy');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleShareLink = () => {
+        const shareUrl = `${window.location.origin}/groupbuy/${groupBuyLink}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            messageApi.success('Share link copied to clipboard!');
+        });
+    };
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-64"><Spin size="large" /></div>;
+    }
 
     return (
-        <div className="p-4">
-            {/* Create New Group */}
-            <div className="bg-gradient-to-r from-pink-100 to-rose-50 rounded-lg p-6 mb-6">
-                <h2 className="text-2xl font-bold mb-6 text-pink-700">Start a Group Buy</h2>
-                <div className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-pink-600 mb-2">Group Name</label>
-                        <Input 
-                            placeholder="Enter group name" 
-                            className="mb-2 h-12 text-base"
-                        />
+        <div className="max-w-2xl mx-auto p-4">
+            {contextHolder}
+            <Card title="Group Buying" extra={onClose && <Button onClick={onClose}>Close</Button>}>
+                {product && (
+                    <div className="mb-4">
+                        <h3 className="font-medium">{product.name}</h3>
+                        <p className="text-gray-500">Original Price: ${product.price}</p>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-pink-600 mb-2">Target Members</label>
-                        <Input 
-                            placeholder="Enter target number of members" 
-                            type="number" 
-                            className="mb-2 h-12 text-base"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-pink-600 mb-2">Discount Percentage</label>
-                        <Input 
-                            placeholder="Enter discount percentage" 
-                            type="number" 
-                            className="mb-2 h-12 text-base"
-                        />
-                    </div>
-                    <StyledButton 
-                        type="primary" 
-                        className="w-full h-12 text-base"
-                    >
-                        Create Group
-                    </StyledButton>
-                </div>
-            </div>
+                )}
 
-            {/* Active Groups */}
-            <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-6 text-pink-700">Active Groups</h3>
-                <List
-                    dataSource={activeGroups}
-                    renderItem={group => (
-                        <List.Item
-                            actions={[
-                                <StyledButton 
-                                    type="primary" 
-                                    icon={<ShareAltOutlined />}
-                                >
-                                    Invite
-                                </StyledButton>
-                            ]}
-                        >
-                            <List.Item.Meta
-                                title={<span className="text-pink-700 font-medium">{group.name}</span>}
-                                description={
-                                    <div className="flex items-center gap-3 mt-2">
-                                        <Tag color="pink" className="px-3 py-1">
-                                            <UserOutlined className="mr-1" /> {group.members}/{group.target} members
-                                        </Tag>
-                                        <Tag color="red" className="px-3 py-1">{group.discount} off</Tag>
-                                    </div>
-                                }
+                {!groupBuyLink ? (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Discount Percentage</label>
+                            <Input
+                                type="number"
+                                value={discountPercentage}
+                                onChange={(e) => setDiscountPercentage(Number(e.target.value))}
+                                min={1}
+                                max={50}
+                                suffix="%"
                             />
-                        </List.Item>
-                    )}
-                />
-            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Minimum Participants</label>
+                            <Input
+                                type="number"
+                                value={minParticipants}
+                                onChange={(e) => setMinParticipants(Number(e.target.value))}
+                                min={2}
+                                max={20}
+                            />
+                        </div>
+                        <Button type="primary" block onClick={handleCreateGroupBuy}>
+                            Create Group Buy
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div className="text-center">
+                            <Progress
+                                type="circle"
+                                percent={Math.round((currentParticipants / minParticipants) * 100)}
+                                format={() => (
+                                    <div>
+                                        <div className="text-lg font-medium">{currentParticipants}/{minParticipants}</div>
+                                        <div className="text-xs text-gray-500">Participants</div>
+                                    </div>
+                                )}
+                            />
+                        </div>
+
+                        <div className="text-center">
+                            <p className="text-sm text-gray-600 mb-2">
+                                {currentParticipants >= minParticipants
+                                    ? 'Group buy goal reached! Discount activated!'
+                                    : `${minParticipants - currentParticipants} more participants needed`}
+                            </p>
+                            <p className="text-lg font-medium">
+                                {currentParticipants >= minParticipants && (
+                                    <span className="text-green-500">{discountPercentage}% OFF</span>
+                                )}
+                            </p>
+                        </div>
+
+                        <div className="flex space-x-2">
+                            <Button block icon={<UserOutlined />} onClick={handleJoinGroupBuy}>
+                                Join Group
+                            </Button>
+                            <Button block icon={<ShareAltOutlined />} onClick={handleShareLink}>
+                                Share Link
+                            </Button>
+                            {currentParticipants >= minParticipants && (
+                                <Button
+                                    type="primary"
+                                    block
+                                    icon={<ShoppingCartOutlined />}
+                                    className="bg-pink-500 hover:bg-pink-600"
+                                    onClick={() => {/* Add to cart with discount */}}
+                                >
+                                    Buy Now
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </Card>
         </div>
     );
 }
