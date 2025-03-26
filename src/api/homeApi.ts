@@ -39,14 +39,14 @@ export interface PaginatedProducts {
 }
 
 // Get all products
-export async function getHomeList(page: number = 1, category_id?: string): Promise<PaginatedProducts> {
+export async function getHomeList(category_id?: string): Promise<Product[]> {
     try {
-        const params: Record<string, any> = { page };
+        const params: Record<string, any> = {};
         if (category_id && category_id !== 'all') {
-            params.category_id = category_id;
+            params.category = category_id;
         }
         
-        const response = await api.get<PaginatedProducts>('/home', { params });
+        const response = await api.get<Product[]>('/home', { params });
         return response.data;
     } catch (error) {
         console.error('Get home list error:', error);

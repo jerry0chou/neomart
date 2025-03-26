@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ShoppingCartOutlined, ReloadOutlined } from "@ant-design/icons";
-import { message, Result, Button, Pagination, Card, Skeleton } from 'antd';
+import { message, Result, Button, Card, Skeleton } from 'antd';
 import { useAppDispatch } from '../store/hooks';
 import { addToCart } from '../store/cartSlice';
 import { getHomeList, getCategories, Product, Category } from '../api/homeApi';
-
-const PAGE_SIZE = 9;
 
 interface ProductListProps {
     selectedCategory: string;
@@ -18,8 +16,6 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
     const [error, setError] = useState<string | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [total, setTotal] = useState(0);
 
     const fetchCategories = async () => {
         try {
@@ -30,14 +26,12 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
         }
     };
 
-    const fetchProducts = async (page: number = currentPage) => {
+    const fetchProducts = async () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getHomeList(page, selectedCategory);
-            setProducts(data.products);
-            setTotal(data.total);
-            setCurrentPage(data.current_page);
+            const products = await getHomeList(selectedCategory);
+            setProducts(products);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products';
             setError(errorMessage);
@@ -49,14 +43,9 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
     };
 
     useEffect(() => {
-        fetchProducts(1);
+        fetchProducts();
         fetchCategories();
     }, [selectedCategory]);
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        fetchProducts(page);
-    };
 
     const handleAddToCart = (product: Product) => {
         dispatch(addToCart({
@@ -83,7 +72,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                         key="retry" 
                         type="primary"
                         icon={<ReloadOutlined />}
-                        onClick={() => fetchProducts(1)}
+                        onClick={() => fetchProducts()}
                     >
                         Try Again
                     </Button>
@@ -105,7 +94,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 min-h-[400px]">
                 {loading ? (
-                    Array(PAGE_SIZE).fill(null).map((_, index) => (
+                    Array(6).fill(null).map((_, index) => (
                         <ProductSkeleton key={index} />
                     ))
                 ) : products.length > 0 ? (
@@ -151,18 +140,6 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                     </div>
                 )}
             </div>
-
-            {total > PAGE_SIZE && (
-                <div className="flex justify-center mt-6">
-                    <Pagination
-                        current={currentPage}
-                        total={total}
-                        pageSize={PAGE_SIZE}
-                        onChange={handlePageChange}
-                        showSizeChanger={false}
-                    />
-                </div>
-            )}
         </div>
     );
 }
