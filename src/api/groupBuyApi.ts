@@ -26,13 +26,15 @@ export interface ApplyDiscountResponse extends BaseResponse {
 export async function createGroupBuy(
     product_id: number,
     discount_percentage: number,
-    min_participants: number
+    min_participants: number,
+    end_date: string
 ): Promise<CreateGroupBuyResponse> {
     try {
-        const response = await api.post<CreateGroupBuyResponse>('/api/groupbuy', {
+        const response = await api.post<CreateGroupBuyResponse>('/api/groupbuy/create', {
             product_id,
             discount_percentage,
-            min_participants
+            min_participants,
+            end_date
         });
         return {
             status: 'success',

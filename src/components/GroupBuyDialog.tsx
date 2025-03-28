@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, message } from 'antd';
+import { Modal, Form, Input, message, DatePicker } from 'antd';
 import { createGroupBuy } from '../api/groupBuyApi';
 import { TeamOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 
 interface GroupBuyDialogProps {
     productId: number;
@@ -20,7 +21,8 @@ const GroupBuyDialog: React.FC<GroupBuyDialogProps> = ({ productId, productName,
             const response = await createGroupBuy(
                 productId,
                 Number(values.discount_percentage),
-                Number(values.min_participants)
+                Number(values.min_participants),
+                values.end_date.format('YYYY-MM-DDTHH:mm:ss')
             );
 
             if (response.status === 'success') {
@@ -105,6 +107,39 @@ const GroupBuyDialog: React.FC<GroupBuyDialogProps> = ({ productId, productName,
                             type="number" 
                             placeholder="10" 
                             className="rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500 h-10"
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={
+                            <div className="flex items-center">
+                                <span className="text-gray-700 font-medium">End Date</span>
+                            </div>
+                        }
+                        name="end_date"
+                        rules={[
+                            { required: true, message: 'Please select end date' },
+                            {
+                                validator: async (_, value) => {
+                                    if (!value) return Promise.resolve();
+                                    const selectedDate = value.toDate();
+                                    const now = new Date();
+                                    if (selectedDate <= now) {
+                                        throw new Error('End date must be in the future');
+                                    }
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
+                        validateFirst={true}
+                    >
+                        <DatePicker 
+                            showTime 
+                            className="w-full rounded-lg border-gray-300 focus:border-pink-500 focus:ring-pink-500 h-10"
+                            format="YYYY-MM-DD HH:mm:ss"
+                            disabledDate={(current) => {
+                                return current && current <= dayjs().startOf('day');
+                            }}
                         />
                     </Form.Item>
 
