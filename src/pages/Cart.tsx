@@ -5,13 +5,10 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchCartItems, updateItemQuantity, removeItemFromCart } from '../store/cartSlice';
 import { Result, Button } from 'antd';
 
-import clothing from "../assets/clothing.png";
-import shirt from "../assets/shirt.png";
-import jeans from "../assets/jeans.png";
 
 const Cart = () => {
     const dispatch = useAppDispatch();
-    const { items, loading, error } = useAppSelector(state => state.cart);
+    const { items, error } = useAppSelector(state => state.cart);
     const navigate = useNavigate();
     const userEmail = useAppSelector(state => state.user?.email);
 
@@ -77,10 +74,6 @@ const Cart = () => {
                 />
             </div>
         );
-    }
-
-    if (loading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
     if (error) {
