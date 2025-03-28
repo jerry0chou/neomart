@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import { ShoppingCartOutlined, CreditCardOutlined, TeamOutlined } from "@ant-design/icons";
+import { ShoppingCartOutlined, CreditCardOutlined } from "@ant-design/icons";
 import ProductList from "../components/ProductList.tsx";
-import GroupBuying from "../components/GroupBuying.tsx";
 import ShoppingCredits from "../components/ShoppingCredits.tsx";
 import Search from "../components/Search.tsx";
 import Category from "../components/Category.tsx";
@@ -16,8 +15,6 @@ const NeoMartPage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [isCreditsModalVisible, setIsCreditsModalVisible] = useState(false);
-    const [isGroupBuyingModalVisible, setIsGroupBuyingModalVisible] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | undefined>();
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const cartItems = useAppSelector(state => state.cart.items);
     const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -28,9 +25,8 @@ const NeoMartPage = () => {
         if(!email || !access_token){
             navigate('/auth');
         } else {
-            // Set user data from localStorage
             dispatch(setUser({
-                name: email.split('@')[0], // Use email prefix as name for now
+                name: email.split('@')[0],
                 email: email
             }));
         }
@@ -41,38 +37,28 @@ const NeoMartPage = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100 rounded-xl">
+        <div className="flex flex-col min-h-screen bg-gray-100">
             <div className="flex flex-1">
                 {/* Sidebar */}
-                <aside className="w-44 p-4">
-                    <Category onCategorySelect={handleCategorySelect} />
+                <aside className="w-64 p-4">
+                    <Category onCategorySelect={handleCategorySelect} selectedCategory={selectedCategory} />
                 </aside>
 
                 {/* Main Content */}
                 <main className="flex-1 p-4">
                     {/* Search Bar and Quick Access */}
-                    <div className="flex justify-center items-center mb-6">
+                    <div className="flex justify-between items-center mb-6">
                         <div className="flex-1 max-w-xl">
                             <Search/>
                         </div>
                         <div className="flex items-center gap-4 ml-6">
                             <div 
-                                className="bg-gradient-to-br from-pink-200 to-pink-100 rounded-lg p-3 cursor-pointer hover:shadow-lg transition-shadow"
+                                className="bg-gradient-to-r from-pink-500 to-rose-400 rounded-lg p-3 cursor-pointer hover:shadow-lg transition-shadow text-white hover:from-pink-600 hover:to-rose-500"
                                 onClick={() => setIsCreditsModalVisible(true)}
                             >
                                 <div className="flex items-center">
-                                    <CreditCardOutlined className="text-xl mr-2 text-pink-600" />
+                                    <CreditCardOutlined className="text-xl mr-2" />
                                     <span className="font-medium">Credits</span>
-                                </div>
-                            </div>
-
-                            <div 
-                                className="bg-gradient-to-r from-pink-500 to-rose-400 rounded-lg p-3 cursor-pointer hover:shadow-lg transition-shadow text-white hover:from-pink-600 hover:to-rose-500"
-                                onClick={() => setIsGroupBuyingModalVisible(true)}
-                            >
-                                <div className="flex items-center">
-                                    <TeamOutlined className="text-xl mr-2" />
-                                    <span className="font-medium">Group Buy</span>
                                 </div>
                             </div>
 
@@ -102,19 +88,6 @@ const NeoMartPage = () => {
                         width={600}
                     >
                         <ShoppingCredits />
-                    </Modal>
-
-                    <Modal
-                        title="Group Buying"
-                        open={isGroupBuyingModalVisible}
-                        onCancel={() => {
-                            setIsGroupBuyingModalVisible(false);
-                            setSelectedProduct(undefined);
-                        }}
-                        footer={null}
-                        width={600}
-                    >
-                        <GroupBuying product={selectedProduct} onClose={() => setIsGroupBuyingModalVisible(false)} />
                     </Modal>
                 </main>
             </div>

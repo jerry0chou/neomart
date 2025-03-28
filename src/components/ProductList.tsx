@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addItemToCart } from '../store/cartSlice';
 import { getHomeList, getCategories, Product, Category, searchProducts } from '../api/homeApi';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import GroupBuyDialog from './GroupBuyDialog';
 
 interface ProductListProps {
     selectedCategory: string;
@@ -146,12 +147,19 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                                 <p className="text-xs text-gray-500 mb-2 line-clamp-2">{product.description}</p>
                                 <div className="flex justify-between items-center">
                                     <p className="text-gray-700 text-sm font-medium">${product.price.toFixed(2)}</p>
-                                    <button
-                                        onClick={(e) => handleAddToCart(e, product)}
-                                        className="w-7 h-7 bg-pink-500 text-white rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-200 hover:scale-110"
-                                    >
-                                        <ShoppingCartOutlined style={{ fontSize: '16px' }} />
-                                    </button>
+                                    <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                                        <GroupBuyDialog 
+                                            productId={product.id} 
+                                            productName={product.name}
+                                            variant="list"
+                                        />
+                                        <button
+                                            onClick={(e) => handleAddToCart(e, product)}
+                                            className="w-7 h-7 bg-pink-500 text-white rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-200 hover:scale-110"
+                                        >
+                                            <ShoppingCartOutlined style={{ fontSize: '16px' }} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

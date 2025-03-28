@@ -5,13 +5,13 @@ import type { CollapseProps } from 'antd';
 import { getCategories, Category as CategoryType } from '../api/homeApi';
 
 interface CategoryProps {
-    onCategorySelect?: (categoryId: string) => void;
+    onCategorySelect: (categoryId: string) => void;
+    selectedCategory: string;
 }
 
-export default function Category({ onCategorySelect }: CategoryProps) {
+export default function Category({ onCategorySelect, selectedCategory }: CategoryProps) {
     const [categories, setCategories] = useState<CategoryType[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
     useEffect(() => {
         fetchCategories();
@@ -29,42 +29,37 @@ export default function Category({ onCategorySelect }: CategoryProps) {
     };
 
     const handleCategoryClick = (categoryId: string) => {
-        setSelectedCategory(categoryId);
-        onCategorySelect?.(categoryId);
+        onCategorySelect(categoryId);
     };
 
     const items: CollapseProps['items'] = [
         {
             key: '1',
             label: (
-                <span className="text-base font-medium text-gray-800">
+                <span className="text-lg font-semibold text-gray-800">
                     Categories
                 </span>
             ),
             children: (
-                <div className="py-1">
+                <div className="py-2">
                     <div
                         key="all"
-                        className={`flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group ${
-                            selectedCategory === 'all' ? 'bg-white/50 text-pink-600' : ''
+                        className={`flex items-center py-2 px-4 cursor-pointer transition-colors ${
+                            selectedCategory === 'all' ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
                         }`}
                         onClick={() => handleCategoryClick('all')}
                     >
-                        <span className={`${selectedCategory === 'all' ? 'text-pink-600' : 'text-gray-700'} group-hover:text-pink-600`}>
-                            All Categories
-                        </span>
+                        <span>All Categories</span>
                     </div>
                     {categories.map((category) => (
                         <div
                             key={category.id}
-                            className={`flex items-center justify-between py-2.5 px-3 hover:bg-white/50 cursor-pointer transition-colors group ${
-                                selectedCategory === String(category.id) ? 'bg-white/50 text-pink-600' : ''
+                            className={`flex items-center py-2 px-4 cursor-pointer transition-colors ${
+                                selectedCategory === String(category.id) ? 'text-pink-500' : 'text-gray-700 hover:text-pink-500'
                             }`}
                             onClick={() => handleCategoryClick(String(category.id))}
                         >
-                            <span className={`${selectedCategory === String(category.id) ? 'text-pink-600' : 'text-gray-700'} group-hover:text-pink-600`}>
-                                {category.name}
-                            </span>
+                            <span>{category.name}</span>
                         </div>
                     ))}
                 </div>
@@ -73,7 +68,7 @@ export default function Category({ onCategorySelect }: CategoryProps) {
     ];
 
     return (
-        <div className="bg-gradient-to-b from-pink-200/100 to-pink-100/100 rounded-lg">
+        <div className="bg-pink-100 rounded-lg">
             <Collapse
                 defaultActiveKey={['1']}
                 ghost

@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addItemToCart } from '../store/cartSlice';
+import GroupBuyDialog from '../components/GroupBuyDialog';
 
 const ProductDetailPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -195,18 +196,25 @@ const ProductDetailPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <button 
-                        onClick={handleAddToCart}
-                        disabled={!product.stock}
-                        className={`w-full flex items-center justify-center text-white py-3 px-6 rounded-lg transition-colors ${
-                            product.stock 
-                                ? 'bg-pink-500 hover:bg-pink-600' 
-                                : 'bg-gray-400 cursor-not-allowed'
-                        }`}
-                    >
-                        <ShoppingCartOutlined className="mr-2" />
-                        {product.stock ? 'Add to Cart' : 'Out of Stock'}
-                    </button>
+                    <div className="space-y-4">
+                        <button 
+                            onClick={handleAddToCart}
+                            disabled={!product.stock}
+                            className={`w-full flex items-center justify-center text-white py-3 px-6 rounded-lg transition-colors ${
+                                product.stock 
+                                    ? 'bg-pink-500 hover:bg-pink-600' 
+                                    : 'bg-gray-400 cursor-not-allowed'
+                            }`}
+                        >
+                            <ShoppingCartOutlined className="mr-2" />
+                            {product.stock ? 'Add to Cart' : 'Out of Stock'}
+                        </button>
+
+                        <GroupBuyDialog 
+                            productId={product.id} 
+                            productName={product.name}
+                        />
+                    </div>
 
                     {/* Additional Features */}
                     <div className="bg-pink-50 p-4 rounded-lg">
