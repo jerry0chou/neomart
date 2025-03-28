@@ -12,6 +12,7 @@ export interface Product {
     seller_id: number;
     category_id: number;
     created_at: string;
+    uniqueLink: string | null;
 }
 
 export interface Category {

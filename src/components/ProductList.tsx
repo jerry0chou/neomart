@@ -152,6 +152,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                                             productId={product.id} 
                                             productName={product.name}
                                             variant="list"
+                                            uniqueLink={product.uniqueLink}
                                         />
                                         <button
                                             onClick={(e) => handleAddToCart(e, product)}
