@@ -5,6 +5,7 @@ import MainLayout from "./MainLayout.tsx";
 import Home from "../pages/Home.tsx";
 import NotFound from "../pages/NotFound.tsx";
 import Cart from "../pages/Cart.tsx";
+import ProductDetail from "../pages/ProductDetail.tsx";
 
 export default function NeoRouter(){
     return (
@@ -18,7 +19,7 @@ export default function NeoRouter(){
                            <Routes>
                                <Route path="/" element={<Home/>}/>
                                <Route path="/cart" element={<Cart/>}/>
-
+                               <Route path="/product/:productId" element={<ProductDetail/>}/>
                            </Routes>
                        </MainLayout>}
                 />

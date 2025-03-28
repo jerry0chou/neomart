@@ -4,6 +4,7 @@ import { message, Result, Button, Card, Skeleton } from 'antd';
 import { useAppDispatch } from '../store/hooks';
 import { addToCart } from '../store/cartSlice';
 import { getHomeList, getCategories, Product, Category } from '../api/homeApi';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductListProps {
     selectedCategory: string;
@@ -11,6 +12,7 @@ interface ProductListProps {
 
 export default function ProductList({ selectedCategory }: ProductListProps) {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,12 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
         fetchCategories();
     }, [selectedCategory]);
 
-    const handleAddToCart = (product: Product) => {
+    const handleProductClick = (productId: number) => {
+        navigate(`/product/${productId}`);
+    };
+
+    const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+        e.stopPropagation(); // Prevent navigation when clicking the cart button
         dispatch(addToCart({
             id: product.id,
             name: product.name,
@@ -99,7 +106,11 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                     ))
                 ) : products.length > 0 ? (
                     products.map(product => (
-                        <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow">
+                        <div 
+                            key={product.id} 
+                            className="bg-white rounded-lg overflow-hidden shadow cursor-pointer hover:shadow-lg transition-shadow"
+                            onClick={() => handleProductClick(product.id)}
+                        >
                             <div className="relative">
                                 <div className="absolute top-2 left-2 bg-pink-100 text-pink-600 text-xs px-2 py-1 rounded">
                                     {categories.find(c => c.id === product.category_id)?.name || String(product.category_id)}
@@ -121,7 +132,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
                                 <div className="flex justify-between items-center">
                                     <p className="text-gray-700 text-sm font-medium">${product.price.toFixed(2)}</p>
                                     <button
-                                        onClick={() => handleAddToCart(product)}
+                                        onClick={(e) => handleAddToCart(e, product)}
                                         className="w-7 h-7 bg-pink-500 text-white rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-200 hover:scale-110"
                                     >
                                         <ShoppingCartOutlined style={{ fontSize: '16px' }} />
