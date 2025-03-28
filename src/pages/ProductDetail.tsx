@@ -210,10 +210,10 @@ const ProductDetailPage: React.FC = () => {
                             {product.stock ? 'Add to Cart' : 'Out of Stock'}
                         </button>
 
-                        <GroupBuyDialog 
+                        {/* <GroupBuyDialog 
                             productId={product.id} 
                             productName={product.name}
-                        />
+                        /> */}
                     </div>
 
                     {/* Additional Features */}
