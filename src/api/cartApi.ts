@@ -60,17 +60,13 @@ export async function addToCart(product_id: number, quantity: number, email: str
 }
 
 // Update item quantity in cart
-export async function updateQuantity(cart_id: number, product_id: number, quantity: number, email: string): Promise<BaseResponse> {
+export async function updateQuantity(cart_id: number, product_id: number, quantity: number, email: string, increment: boolean): Promise<BaseResponse> {
     try {
-        const response = await api.put<{message: string}>(`/api/cart/${cart_id}/products/${product_id}`, {
-            quantity,
-            email
-        });
-        return { status: 'success', message: response.data.message };
+        const operationQuantity = increment ? 1 : -1;
+        return await addToCart(product_id, operationQuantity, email);
     } catch (error) {
         console.error('Update quantity error:', error);
-        const err = (error as AxiosError<{error?: string}>).response?.data?.error;
-        return { status: 'error', message: err || 'Failed to update quantity' };
+        return { status: 'error', message: 'Failed to update quantity' };
     }
 }
 
