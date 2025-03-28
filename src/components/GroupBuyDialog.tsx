@@ -1,8 +1,26 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, message, DatePicker } from 'antd';
-import { createGroupBuy } from '../api/groupBuyApi';
-import { TeamOutlined } from '@ant-design/icons';
+import { createGroupBuy, CreateGroupBuyResponse } from '../api/groupBuyApi';
+import { TeamOutlined, LinkOutlined, UsergroupAddOutlined, CalendarOutlined, PercentageOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+
+interface GroupBuyDetails {
+    current_participants: number;
+    discount_percentage: number;
+    end_date: string;
+    id: number;
+    min_participants: number;
+    product_id: number;
+    product_name: string;
+    status: string;
+    unique_link: string;
+}
+
+interface SuccessResponse {
+    group_buy: GroupBuyDetails;
+    message: string;
+    status: 'success';
+}
 
 interface GroupBuyDialogProps {
     productId: number;
@@ -12,6 +30,8 @@ interface GroupBuyDialogProps {
 
 const GroupBuyDialog: React.FC<GroupBuyDialogProps> = ({ productId, productName, variant = 'detail' }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+    const [createdGroupBuy, setCreatedGroupBuy] = useState<CreateGroupBuyResponse | null>(null);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
@@ -25,15 +45,12 @@ const GroupBuyDialog: React.FC<GroupBuyDialogProps> = ({ productId, productName,
                 values.end_date.format('YYYY-MM-DDTHH:mm:ss')
             );
 
-            if (response.status === 'success') {
-                message.success('Group buy created successfully!');
-                setIsModalVisible(false);
-                form.resetFields();
-            } else {
-                message.error(response.message);
-            }
+            setCreatedGroupBuy(response);
+            setIsModalVisible(false);
+            setIsSuccessModalVisible(true);
+            form.resetFields();
         } catch (error) {
-            message.error('Failed to create group buy');
+            message.error(error instanceof Error ? error.message : 'Failed to create group buy');
         } finally {
             setLoading(false);
         }
@@ -200,6 +217,81 @@ const GroupBuyDialog: React.FC<GroupBuyDialogProps> = ({ productId, productName,
                         <p>Discount will be applied once the target is reached</p>
                     </div>
                 </div>
+            </Modal>
+
+            <Modal
+                title={
+                    <div className="text-xl font-semibold text-gray-800 flex items-center">
+                        <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center mr-3">
+                            <TeamOutlined className="text-white text-lg" />
+                        </div>
+                        Group Buy Created Successfully!
+                    </div>
+                }
+                open={isSuccessModalVisible}
+                onCancel={() => setIsSuccessModalVisible(false)}
+                footer={null}
+                className="rounded-lg"
+            >
+                {createdGroupBuy && (
+                    <div className="mt-6 space-y-6">
+                        <div className="bg-pink-50 p-6 rounded-lg space-y-4">
+                            <div className="flex items-center">
+                                <UsergroupAddOutlined className="text-pink-500 text-lg mr-3" />
+                                <div>
+                                    <div className="text-gray-600">Participants</div>
+                                    <div className="text-lg font-medium">
+                                        {createdGroupBuy.group_buy.current_participants} / {createdGroupBuy.group_buy.min_participants} needed
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <PercentageOutlined className="text-pink-500 text-lg mr-3" />
+                                <div>
+                                    <div className="text-gray-600">Discount</div>
+                                    <div className="text-lg font-medium">{createdGroupBuy.group_buy.discount_percentage}% off</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                <CalendarOutlined className="text-pink-500 text-lg mr-3" />
+                                <div>
+                                    <div className="text-gray-600">End Date</div>
+                                    <div className="text-lg font-medium">
+                                        {dayjs(createdGroupBuy.group_buy.end_date).format('YYYY-MM-DD HH:mm:ss')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border border-pink-200 p-4 rounded-lg">
+                            <div className="text-gray-700 mb-2">Share Link</div>
+                            <div className="flex items-center bg-pink-50 p-3 rounded">
+                                <LinkOutlined className="text-pink-500 mr-2" />
+                                <div className="text-pink-600 font-medium flex-1 break-all">
+                                    {window.location.origin}/groupbuy/{createdGroupBuy.group_buy.unique_link}
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(`${window.location.origin}/groupbuy/${createdGroupBuy.group_buy.unique_link}`);
+                                        message.success('Link copied to clipboard!');
+                                    }}
+                                    className="ml-2 px-3 py-1 bg-pink-500 text-white rounded hover:bg-pink-600 transition-colors text-sm"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="text-center">
+                            <button
+                                onClick={() => setIsSuccessModalVisible(false)}
+                                className="px-6 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
             </Modal>
         </>
     );

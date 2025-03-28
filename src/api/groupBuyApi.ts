@@ -5,16 +5,18 @@ import {AxiosError} from "axios";
 export interface GroupBuy {
     id: number;
     product_id: number;
+    product_name: string;
     discount_percentage: number;
     min_participants: number;
     current_participants: number;
     unique_link: string;
-    is_active: boolean;
+    status: string;
+    end_date: string;
 }
 
-export interface CreateGroupBuyResponse extends BaseResponse {
-    group_buy_id?: number;
-    unique_link?: string;
+export interface CreateGroupBuyResponse {
+    group_buy: GroupBuy;
+    message: string;
 }
 
 export interface ApplyDiscountResponse extends BaseResponse {
@@ -36,16 +38,11 @@ export async function createGroupBuy(
             min_participants,
             end_date
         });
-        return {
-            status: 'success',
-            message: response.data.message,
-            group_buy_id: response.data.group_buy_id,
-            unique_link: response.data.unique_link
-        };
+        return response.data;
     } catch (error) {
         console.error('Create group buy error:', error);
         const err = (error as AxiosError<{error?: string}>).response?.data?.error;
-        return { status: 'error', message: err || 'Failed to create group buy' };
+        throw new Error(err || 'Failed to create group buy');
     }
 }
 
