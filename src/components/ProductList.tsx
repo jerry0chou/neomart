@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ShoppingCartOutlined, ReloadOutlined } from "@ant-design/icons";
 import { message, Result, Button, Card, Skeleton } from 'antd';
-import { useAppDispatch } from '../store/hooks';
-import { addToCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { addItemToCart } from '../store/cartSlice';
 import { getHomeList, getCategories, Product, Category } from '../api/homeApi';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
     const [error, setError] = useState<string | null>(null);
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
+    const userEmail = useAppSelector(state => state.user?.email);
 
     const fetchCategories = async () => {
         try {
@@ -55,12 +56,19 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
 
     const handleAddToCart = (e: React.MouseEvent, product: Product) => {
         e.stopPropagation(); // Prevent navigation when clicking the cart button
-        dispatch(addToCart({
-            id: product.id,
-            name: product.name,
-            price: `$${product.price.toFixed(2)}`,
-            image: product.image_url,
-            tag: String(product.category_id)
+        
+        if (!userEmail) {
+            messageApi.warning({
+                content: 'Please log in to add items to cart',
+                duration: 2,
+            });
+            return;
+        }
+
+        dispatch(addItemToCart({
+            product_id: product.id,
+            quantity: 1,
+            email: userEmail
         }));
         messageApi.success({
             content: `${product.name} added to cart`,

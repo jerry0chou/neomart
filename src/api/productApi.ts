@@ -17,6 +17,6 @@ export interface ProductDetail {
 }
 
 export const getProductDetail = async (productId: number): Promise<ProductDetail> => {
-    const response = await http.get(`/product/${productId}`);
+    const response = await http.get(`/api/products/${productId}`);
     return response.data;
 }; 

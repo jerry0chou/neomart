@@ -27,10 +27,13 @@ export interface CouponResponse extends BaseResponse {
 }
 
 // Get cart items with optional category filter
-export async function getCartItems(category?: string): Promise<CartItem[]> {
+export async function getCartItems(email: string, category?: string): Promise<CartItem[]> {
     try {
-        const response = await api.get<CartItem[]>('/cart', {
-            params: category ? { category } : undefined
+        const response = await api.get<CartItem[]>('/api/cart', {
+            params: {
+                email,
+                ...(category ? { category } : {})
+            }
         });
         return response.data;
     } catch (error) {
@@ -41,11 +44,12 @@ export async function getCartItems(category?: string): Promise<CartItem[]> {
 }
 
 // Add or update item in cart
-export async function addToCart(product_id: number, quantity: number): Promise<BaseResponse> {
+export async function addToCart(product_id: number, quantity: number, email: string): Promise<BaseResponse> {
     try {
-        const response = await api.post<{message: string}>('/cart', {
+        const response = await api.post<{message: string}>('/api/cart', {
             product_id,
-            quantity
+            quantity,
+            email
         });
         return { status: 'success', message: response.data.message };
     } catch (error) {
@@ -56,10 +60,11 @@ export async function addToCart(product_id: number, quantity: number): Promise<B
 }
 
 // Update item quantity in cart
-export async function updateQuantity(cart_id: number, product_id: number, quantity: number): Promise<BaseResponse> {
+export async function updateQuantity(cart_id: number, product_id: number, quantity: number, email: string): Promise<BaseResponse> {
     try {
-        const response = await api.put<{message: string}>(`/cart/${cart_id}/products/${product_id}`, {
-            quantity
+        const response = await api.put<{message: string}>(`/api/cart/${cart_id}/products/${product_id}`, {
+            quantity,
+            email
         });
         return { status: 'success', message: response.data.message };
     } catch (error) {
@@ -70,9 +75,11 @@ export async function updateQuantity(cart_id: number, product_id: number, quanti
 }
 
 // Remove item from cart
-export async function removeFromCart(cart_id: number, product_id: number): Promise<BaseResponse> {
+export async function removeFromCart(cart_id: number, product_id: number, email: string): Promise<BaseResponse> {
     try {
-        const response = await api.delete<{message: string}>(`/cart/${cart_id}/products/${product_id}`);
+        const response = await api.delete<{message: string}>(`/api/cart/${cart_id}/products/${product_id}`, {
+            data: { email }  // For DELETE requests, use data instead of params
+        });
         return { status: 'success', message: response.data.message };
     } catch (error) {
         console.error('Remove from cart error:', error);
@@ -82,9 +89,10 @@ export async function removeFromCart(cart_id: number, product_id: number): Promi
 }
 
 // Process checkout
-export async function checkout(credits_to_apply?: number): Promise<CheckoutResponse> {
+export async function checkout(email: string, credits_to_apply?: number): Promise<CheckoutResponse> {
     try {
-        const response = await api.post<CheckoutResponse>('/cart/checkout', {
+        const response = await api.post<CheckoutResponse>('/api/cart/checkout', {
+            email,
             credits_to_apply
         });
         return {
@@ -102,10 +110,11 @@ export async function checkout(credits_to_apply?: number): Promise<CheckoutRespo
 }
 
 // Apply coupon
-export async function applyCoupon(coupon_code: string): Promise<CouponResponse> {
+export async function applyCoupon(coupon_code: string, email: string): Promise<CouponResponse> {
     try {
-        const response = await api.post<CouponResponse>('/cart/apply-coupon', {
-            coupon_code
+        const response = await api.post<CouponResponse>('/api/cart/apply-coupon', {
+            coupon_code,
+            email
         });
         return {
             status: 'success',

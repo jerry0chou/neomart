@@ -4,15 +4,18 @@ import { ShoppingCartOutlined } from '@ant-design/icons';
 import {message} from "antd";
 import {login, register} from "../api/userApi.ts";
 import {useNavigate} from "react-router-dom";
+import { useAppDispatch } from '../store/hooks';
+import { setUser as setAuthUser } from '../store/authSlice';
+import { setUser as setUserEmail } from '../store/userSlice';
+
 function isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
-
-
 export default function Auth() {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [messageApi, contextHolder] = message.useMessage();
     const [isLogin, setIsLogin] = useState(true);
     const [fullname, setFullname] = useState('');
@@ -50,7 +53,6 @@ export default function Auth() {
         return true;
     }
 
-
     const onClick = ()=>{
         console.log("clicked", isLogin ? 'Login' : 'Sign up');
         if(!isLogin){
@@ -69,6 +71,8 @@ export default function Auth() {
                 login(email, password, isChecked).then((result) => {
                     if(result.status == 'success') {
                         messageApi.success(result.message)
+                        dispatch(setAuthUser({ email, name: email.split('@')[0] }));
+                        dispatch(setUserEmail({ email }));
                         navigate('/')
                     }else
                         messageApi.error(result.message)

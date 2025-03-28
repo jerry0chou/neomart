@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, ChevronDown, ChevronUp, Trash2, ArrowRight } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { removeFromCart, updateQuantity } from '../store/cartSlice';
+import { fetchCartItems, updateItemQuantity, removeItemFromCart } from '../store/cartSlice';
+import { Result, Button } from 'antd';
 
 import clothing from "../assets/clothing.png";
 import shirt from "../assets/shirt.png";
@@ -10,14 +11,20 @@ import jeans from "../assets/jeans.png";
 
 const Cart = () => {
     const dispatch = useAppDispatch();
-    const items = useAppSelector(state => state.cart.items);
+    const { items, loading, error } = useAppSelector(state => state.cart);
     const navigate = useNavigate();
+    const userEmail = useAppSelector(state => state.user?.email);
+
+    useEffect(() => {
+        if (userEmail) {
+            dispatch(fetchCartItems({ email: userEmail }));
+        }
+    }, [dispatch, userEmail]);
 
     // 计算小计
     const calculateSubtotal = () => {
         return items.reduce((total, item) => {
-            const price = parseFloat(item.price.replace('$', ''));
-            return total + (price * item.quantity);
+            return total + (item.price * item.quantity);
         }, 0);
     };
 
@@ -29,12 +36,63 @@ const Cart = () => {
         return calculateSubtotal() + shipping;
     };
 
+    const handleQuantityUpdate = async (cart_id: number, product_id: number, newQuantity: number) => {
+        if (userEmail && newQuantity > 0) {
+            await dispatch(updateItemQuantity({
+                cart_id,
+                product_id,
+                quantity: newQuantity,
+                email: userEmail
+            }));
+        }
+    };
+
+    const handleRemoveItem = async (cart_id: number, product_id: number) => {
+        if (userEmail) {
+            await dispatch(removeItemFromCart({
+                cart_id,
+                product_id,
+                email: userEmail
+            }));
+        }
+    };
+
+    if (!userEmail) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen p-4">
+                <Result
+                    status="warning"
+                    title="Please Log In"
+                    subTitle="You need to be logged in to view your cart."
+                    extra={[
+                        <Button 
+                            key="login" 
+                            type="primary"
+                            onClick={() => navigate('/login')}
+                            className="bg-pink-500 hover:bg-pink-600"
+                        >
+                            Log In
+                        </Button>
+                    ]}
+                />
+            </div>
+        );
+    }
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+    }
+
     return (
         <div className="flex flex-col md:flex-row max-w-6xl mx-auto bg-gray-50">
             {/* 左侧购物车 */}
             <div className="w-full md:w-1/2 p-6">
                 <div className="flex items-center mb-6">
-                    <ArrowLeft className="mr-2 text-gray-700" onClick={() => navigate(-1)} />
+                    <ArrowLeft className="mr-2 text-gray-700 cursor-pointer" onClick={() => navigate(-1)} />
                     <span className="text-xl font-semibold text-gray-700">Shopping Continue</span>
                 </div>
 
@@ -44,27 +102,27 @@ const Cart = () => {
 
                     <div className="space-y-4">
                         {items.map((item) => (
-                            <div key={item.id} className="bg-white rounded-lg p-4 flex items-center shadow-sm">
+                            <div key={item.cart_id} className="bg-white rounded-lg p-4 flex items-center shadow-sm">
                                 <img
-                                    src={item.image}
-                                    alt={item.name}
+                                    src={item.image_url}
+                                    alt={item.product_name}
                                     className="w-20 h-20 object-cover rounded-md"
                                 />
                                 <div className="ml-4 flex-1">
-                                    <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
-                                    <p className="text-gray-600 text-sm">{item.tag}</p>
+                                    <h3 className="text-lg font-semibold text-gray-800">{item.product_name}</h3>
+                                    <p className="text-gray-600 text-sm">{item.category}</p>
                                 </div>
                                 <div className="flex items-center mx-4">
                                     <div className="flex flex-col items-center">
                                         <button
-                                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }))}
+                                            onClick={() => handleQuantityUpdate(item.cart_id, item.product_id, item.quantity + 1)}
                                             className="text-gray-500 hover:text-pink-500"
                                         >
                                             <ChevronUp size={20} />
                                         </button>
                                         <span className="mx-2 text-lg font-medium">{item.quantity}</span>
                                         <button
-                                            onClick={() => dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }))}
+                                            onClick={() => handleQuantityUpdate(item.cart_id, item.product_id, item.quantity - 1)}
                                             className="text-gray-500 hover:text-pink-500"
                                         >
                                             <ChevronDown size={20} />
@@ -72,10 +130,10 @@ const Cart = () => {
                                     </div>
                                 </div>
                                 <div className="text-lg font-semibold text-gray-800 mr-4">
-                                    {item.price}
+                                    ${item.price.toFixed(2)}
                                 </div>
                                 <button
-                                    onClick={() => dispatch(removeFromCart(item.id))}
+                                    onClick={() => handleRemoveItem(item.cart_id, item.product_id)}
                                     className="text-gray-400 hover:text-pink-500"
                                 >
                                     <Trash2 size={20} />

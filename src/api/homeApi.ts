@@ -46,7 +46,7 @@ export async function getHomeList(category_id?: string): Promise<Product[]> {
             params.category = category_id;
         }
         
-        const response = await api.get<Product[]>('/home', { params });
+        const response = await api.get<Product[]>('/api/home', { params });
         return response.data;
     } catch (error) {
         console.error('Get home list error:', error);
@@ -58,7 +58,7 @@ export async function getHomeList(category_id?: string): Promise<Product[]> {
 // Get all categories
 export const getCategories = async (): Promise<Category[]> => {
     try {
-        const response = await api.get<Category[]>('/categories');
+        const response = await api.get<Category[]>('/api/home/categories');
         return response.data;
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -69,7 +69,7 @@ export const getCategories = async (): Promise<Category[]> => {
 // Get latest products, categories, and best sellers
 export async function getLatest(): Promise<LatestResponse> {
     try {
-        const response = await api.get<LatestResponse>('/latest');
+        const response = await api.get<LatestResponse>('/api/home/latest');
         return response.data;
     } catch (error) {
         console.error('Get latest error:', error);
@@ -81,7 +81,7 @@ export async function getLatest(): Promise<LatestResponse> {
 // Record daily login
 export async function recordDailyLogin(user_id: number): Promise<DailyLoginResponse> {
     try {
-        const response = await api.post<DailyLoginResponse>('/daily', { user_id });
+        const response = await api.post<DailyLoginResponse>('/api/home/daily', { user_id });
         return {
             status: 'success',
             message: response.data.message,

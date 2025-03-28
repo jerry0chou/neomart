@@ -13,17 +13,11 @@ export default function NeoRouter(){
             <Routes>
                 <Route path="/auth" element={<Auth/>}/>
                 <Route path="/error" element={<Error/>}/>
-                {/* - using wildcard path as suggested by the error */}
-                <Route path="/*"
-                       element={<MainLayout>
-                           <Routes>
-                               <Route path="/" element={<Home/>}/>
-                               <Route path="/cart" element={<Cart/>}/>
-                               <Route path="/product/:productId" element={<ProductDetail/>}/>
-                           </Routes>
-                       </MainLayout>}
-                />
-
+                <Route path="/" element={<MainLayout />}>
+                    <Route index element={<Home/>}/>
+                    <Route path="cart" element={<Cart/>}/>
+                    <Route path="product/:productId" element={<ProductDetail/>}/>
+                </Route>
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Router>

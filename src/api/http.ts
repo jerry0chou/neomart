@@ -32,19 +32,23 @@ api.interceptors.request.use(
 
 
 api.interceptors.response.use(
-    (response) => {
-        // const { code, data, msg } = response.data;
-        // if (code !== 0) {
-        //     return Promise.reject(new Error(msg || 'Error'));
-        // }
-        return response; // 返回解析后的 data 部分
-    },
+    (response) => response,
     (error) => {
-
         console.error('API error:', error);
-        // if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-        //     window.location.href = '/login';
+        
+        // Handle authentication errors
+        // if (error.response) {
+        //     const { status } = error.response;
+        //     // if (status === 401 || status === 403) {
+        //         // Clear invalid token
+        //         // localStorage.removeItem('access_token');
+        //         localStorage.removeItem('email');
+        //         // Redirect to login
+        //         window.location.href = '/auth';
+        //         return Promise.reject(new Error('Authentication failed. Please login again.'));
+        //     // }
         // }
+        
         return Promise.reject(error);
     }
 );

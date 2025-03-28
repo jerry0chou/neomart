@@ -12,8 +12,8 @@ import {
     ClockCircleOutlined,
     CheckCircleOutlined
 } from '@ant-design/icons';
-import { useAppDispatch } from '../store/hooks';
-import { addToCart } from '../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { addItemToCart } from '../store/cartSlice';
 
 const ProductDetailPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -23,6 +23,7 @@ const ProductDetailPage: React.FC = () => {
     const [product, setProduct] = useState<ProductDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const userEmail = useAppSelector(state => state.user?.email);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -51,12 +52,18 @@ const ProductDetailPage: React.FC = () => {
     const handleAddToCart = () => {
         if (!product) return;
 
-        dispatch(addToCart({
-            id: product.id,
-            name: product.name,
-            price: `$${product.price.toFixed(2)}`,
-            image: product.image_url,
-            tag: product.category_name
+        if (!userEmail) {
+            messageApi.warning({
+                content: 'Please log in to add items to cart',
+                duration: 2,
+            });
+            return;
+        }
+
+        dispatch(addItemToCart({
+            product_id: product.id,
+            quantity: 1,
+            email: userEmail
         }));
 
         messageApi.success({
