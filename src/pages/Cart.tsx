@@ -142,9 +142,7 @@ const Cart = () => {
                 <div className="max-w-md w-full bg-pink-600 rounded-3xl p-8 text-white shadow-xl">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="text-2xl font-bold">Card Details</h2>
-                        <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden">
-                            <img src="/api/placeholder/48/48" alt="User" className="w-full h-full object-cover" />
-                        </div>
+
                     </div>
 
                     <div className="mb-6">

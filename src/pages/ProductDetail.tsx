@@ -214,10 +214,6 @@ const ProductDetailPage: React.FC = () => {
                         <ul className="space-y-2">
                             <li className="flex items-center text-gray-600">
                                 <CheckCircleOutlined className="text-green-500 mr-2" />
-                                Free shipping on orders over $50
-                            </li>
-                            <li className="flex items-center text-gray-600">
-                                <CheckCircleOutlined className="text-green-500 mr-2" />
                                 30-day return policy
                             </li>
                             <li className="flex items-center text-gray-600">
