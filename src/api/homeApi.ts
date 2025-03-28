@@ -94,3 +94,17 @@ export async function recordDailyLogin(user_id: number): Promise<DailyLoginRespo
         return { status: 'error', message: err || 'Failed to record daily login' };
     }
 }
+
+// Search products
+export async function searchProducts(query: string): Promise<Product[]> {
+    try {
+        const response = await api.get<Product[]>('/api/home/search', { 
+            params: { q: query }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Search products error:', error);
+        const err = (error as AxiosError<{error?: string}>).response?.data?.error;
+        throw new Error(err || 'Failed to search products');
+    }
+}

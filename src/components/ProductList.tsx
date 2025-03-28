@@ -3,8 +3,8 @@ import { ShoppingCartOutlined, ReloadOutlined } from "@ant-design/icons";
 import { message, Result, Button, Card, Skeleton } from 'antd';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addItemToCart } from '../store/cartSlice';
-import { getHomeList, getCategories, Product, Category } from '../api/homeApi';
-import { useNavigate } from 'react-router-dom';
+import { getHomeList, getCategories, Product, Category, searchProducts } from '../api/homeApi';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface ProductListProps {
     selectedCategory: string;
@@ -13,6 +13,7 @@ interface ProductListProps {
 export default function ProductList({ selectedCategory }: ProductListProps) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -33,8 +34,14 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
         setLoading(true);
         setError(null);
         try {
-            const products = await getHomeList(selectedCategory);
-            setProducts(products);
+            const searchQuery = searchParams.get('q');
+            if (searchQuery) {
+                const searchResults = await searchProducts(searchQuery);
+                setProducts(searchResults);
+            } else {
+                const products = await getHomeList(selectedCategory);
+                setProducts(products);
+            }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products';
             setError(errorMessage);
@@ -48,7 +55,7 @@ export default function ProductList({ selectedCategory }: ProductListProps) {
     useEffect(() => {
         fetchProducts();
         fetchCategories();
-    }, [selectedCategory]);
+    }, [selectedCategory, searchParams]);
 
     const handleProductClick = (productId: number) => {
         navigate(`/product/${productId}`);
