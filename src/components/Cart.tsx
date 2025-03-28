@@ -41,7 +41,12 @@ export default function Cart() {
         }
 
         try {
-            const response = await updateQuantity(cartId, productId, newQuantity, userEmail);
+            // Calculate if we need to increment or decrement based on current quantity
+            const currentItem = cartItems.find(item => item.cart_id === cartId && item.product_id === productId);
+            if (!currentItem) return;
+            
+            const increment = newQuantity > currentItem.quantity;
+            const response = await updateQuantity(cartId, productId, newQuantity, userEmail, increment);
             if (response.status === 'success') {
                 fetchCartItems(); // Refresh cart items
             } else {

@@ -37,7 +37,12 @@ export const addItemToCart = createAsyncThunk(
 export const updateItemQuantity = createAsyncThunk(
     'cart/updateItemQuantity',
     async ({ cart_id, product_id, quantity, email }: { cart_id: number; product_id: number; quantity: number; email: string }) => {
-        const response = await updateQuantity(cart_id, product_id, quantity, email);
+        // Since we're setting an absolute quantity, we'll determine increment based on the current state
+        const currentItems = await getCartItems(email);
+        const currentItem = currentItems.find(item => item.cart_id === cart_id && item.product_id === product_id);
+        const increment = currentItem ? quantity > currentItem.quantity : true;
+        
+        const response = await updateQuantity(cart_id, product_id, quantity, email, increment);
         if (response.status === 'success') {
             // Refresh cart items after updating
             return await getCartItems(email);
