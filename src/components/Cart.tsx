@@ -2,18 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Input, message, Spin } from 'antd';
 import { CartItem, getCartItems, removeFromCart, applyCoupon, checkout, updateQuantity } from '../api/cartApi';
+import { useAppSelector } from '../store/hooks';
 
 export default function Cart() {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [couponCode, setCouponCode] = useState('');
-    const [creditsToApply, setCreditsToApply] = useState<number>(0);
+    const [creditsToApply, setCreditsToApply] = useState<string>('');
     const [messageApi, contextHolder] = message.useMessage();
+    const userEmail = useAppSelector(state => state.user?.email);
 
     const fetchCartItems = async () => {
+        if (!userEmail) return;
         setLoading(true);
         try {
-            const items = await getCartItems();
+            const items = await getCartItems(userEmail);
             setCartItems(items);
         } catch (error) {
             messageApi.error('Failed to fetch cart items');
@@ -24,9 +27,10 @@ export default function Cart() {
 
     useEffect(() => {
         fetchCartItems();
-    }, []);
+    }, [userEmail]);
 
     const handleQuantityChange = async (cartId: number, productId: number, newQuantity: number, stock: number) => {
+        if (!userEmail) return;
         if (newQuantity < 1) {
             messageApi.warning('Quantity cannot be less than 1');
             return;
@@ -37,7 +41,7 @@ export default function Cart() {
         }
 
         try {
-            const response = await updateQuantity(cartId, productId, newQuantity);
+            const response = await updateQuantity(cartId, productId, newQuantity, userEmail);
             if (response.status === 'success') {
                 fetchCartItems(); // Refresh cart items
             } else {
@@ -49,8 +53,9 @@ export default function Cart() {
     };
 
     const handleRemoveItem = async (cartId: number, productId: number) => {
+        if (!userEmail) return;
         try {
-            const response = await removeFromCart(cartId, productId);
+            const response = await removeFromCart(cartId, productId, userEmail);
             if (response.status === 'success') {
                 messageApi.success('Item removed from cart');
                 fetchCartItems(); // Refresh cart items
@@ -63,13 +68,14 @@ export default function Cart() {
     };
 
     const handleApplyCoupon = async () => {
+        if (!userEmail) return;
         if (!couponCode.trim()) {
             messageApi.warning('Please enter a coupon code');
             return;
         }
 
         try {
-            const response = await applyCoupon(couponCode);
+            const response = await applyCoupon(couponCode, userEmail);
             if (response.status === 'success') {
                 messageApi.success(`Coupon applied! You saved $${response.discount_amount?.toFixed(2)}`);
                 fetchCartItems(); // Refresh cart to show updated prices
@@ -82,8 +88,10 @@ export default function Cart() {
     };
 
     const handleCheckout = async () => {
+        if (!userEmail) return;
         try {
-            const response = await checkout(creditsToApply);
+            const credits = creditsToApply ? parseInt(creditsToApply) : undefined;
+            const response = await checkout(userEmail, credits);
             if (response.status === 'success') {
                 messageApi.success('Checkout successful!');
                 if (response.credits_earned) {
@@ -172,7 +180,7 @@ export default function Cart() {
                                 type="number"
                                 placeholder="Credits to apply"
                                 value={creditsToApply}
-                                onChange={(e) => setCreditsToApply(Number(e.target.value))}
+                                onChange={(e) => setCreditsToApply(e.target.value)}
                                 className="mr-2"
                                 min={0}
                             />
